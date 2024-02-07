@@ -77,8 +77,25 @@ end
 
 X = X'; % output as row vector
 
-%% 1.2 Round-off Error
+%% 1.2 Round-off Error (AX - B = 0)
+eps   = 1e-6;       % error tolerance
+err = zeros(n,1); % pre-allocate error vector
 
+% Determine max error between LHS & RHS of the linear system
+for i = 1:n
+    total = -B(i);
+    for j = 1:n
+        total = total + A(i,j)*X(j);
+    end
+    err(i) = total;
+end
+
+max_error = max(err);
+
+% Error handling
+if max_error > eps
+    fprintf("Round-off error is significant. Solution may be incorrect.");
+end
 
 %% 2.0 Compute Determinant
 
