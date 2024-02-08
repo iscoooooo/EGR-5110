@@ -67,27 +67,33 @@ X = zeros(n,1); % initialize solution array
 % Implement backward substitution
 X(n) = C(n)/U(n,n); % i=n
 
-for i = n-1:-1:1    % i=n-1,..,1
-    total = C(i);
-    for j = i+1:n
-        total = total - U(i,j)*X(j);
-    end
-    X(i) = total*(1/U(i,i));
+% for i = n-1:-1:1    % i=n-1,..,1
+%     total = C(i);
+%     for j = i+1:n
+%         total = total - U(i,j)*X(j);
+%     end
+%     X(i) = total/U(i,i);
+% end
+
+for i = n-1:-1:1
+    X(i) = (C(i) - U(i,i+1:n)*X(i+1:n)) / U(i,i); % vectorized
 end
 
-X = X'; % output as row vector
-
 %% 1.2 Round-off Error (AX - B = 0)
-eps   = 1e-6;       % error tolerance
+eps   = 1e-6;     % error tolerance
 err = zeros(n,1); % pre-allocate error vector
 
 % Determine max error between LHS & RHS of the linear system
+% for i = 1:n
+%     total = -B(i);
+%     for j = 1:n
+%         total = total + A(i,j)*X(j);
+%     end
+%     err(i) = total;
+% end
+
 for i = 1:n
-    total = -B(i);
-    for j = 1:n
-        total = total + A(i,j)*X(j);
-    end
-    err(i) = total;
+    err(i) = A(i,:)*X - B(i); % vectorized
 end
 
 max_error = max(err);
@@ -97,7 +103,9 @@ if max_error > eps
     fprintf("Round-off error is significant. Solution may be incorrect.");
 end
 
-%% 2.0 Compute Determinant
+X = X'; % output as row vector
+
+%% 2.0 Compute Determinant (LU Decomposition)
 
 determ = 0; % placeholder
 
