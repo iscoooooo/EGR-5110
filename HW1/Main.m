@@ -34,9 +34,10 @@ XGE = XGE';
 XMATLAB = A\B;
 
 compare = [XGE, XMATLAB]; % Combines arrays for side-by-side comparison
-disp('GE MATLAB')
+fprintf('\n\t  GE \t  MATLAB \n')
 disp(compare)
 disp(['Elapsed time is ', num2str(time), ' seconds'])
 
 disp(['Your solver calculated ', num2str(determ), ' for the determinant'])
 disp(['MATLABs det function gives ', num2str(det(A))])
+fprintf('\n')
