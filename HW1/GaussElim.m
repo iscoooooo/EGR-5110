@@ -46,12 +46,14 @@ for k = 1:n-1
     % Partial Pivoting
     %   Search all rows > k for the highest magnitude. If needed, swap row
     %   k with the highest magnitude row.
+    %   It's important to a keep a pivot count any time that a pivot is
+    %   made. It will  be important for computing the determinant.
     [~,idx]  = max(abs(a(k:n,k)));
     temp     = a(k,:);
     a(k,:)   = a(k+idx-1,:);
     a(k+idx-1,:) = temp;
 
-    % Elimination pass on all rows i > k:
+    % Forward Elimination pass on all rows i > k:
     for i = k+1:n
         ratio  = a(i,k)/a(k,k);
         a(i,:) = a(i,:) - ratio*a(k,:);
@@ -80,7 +82,7 @@ for i = n-1:-1:1
 end
 
 %% 1.2 Round-off Error (AX - B = 0)
-eps   = 1e-6;     % error tolerance
+tol = 1e-6;       % error tolerance
 err = zeros(n,1); % pre-allocate error vector
 
 % Determine max error between LHS & RHS of the linear system
@@ -99,7 +101,7 @@ end
 max_error = max(err);
 
 % Error handling
-if max_error > eps
+if max_error > tol
     fprintf("Round-off error is significant. Solution may be incorrect.");
 end
 
