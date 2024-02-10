@@ -1,28 +1,35 @@
 clc; clear;
 
-A = [2 0 0 1 1 4 0 0;
-     0 0 1 2 1 0 1 1;
-     3 3 3 3 3 3 3 3;
-     0 0 0 0 1 2 0 0;
-     0 0 0 0 0 0 3 1;
-     1 1 1 0 0 0 1 2;
-     0 5 2 1 0 0 1 2;
-     0 2 0 2 0 2 0 2];
+% HW1-Activity given constants
+a = 30*pi/180; % [rad]
+b = 45*pi/180; % [rad]
+P = 3;         % [kN]
 
-B = [21.50;
-     24.70;
-     70.35;
-     7.50;
-     13.75;
-     13.45;
-     28.90;
-     27.50];
+% Define coefficient matrix
+A = [sin(b) cos(a)   0     0    0    0 1 0; 
+     cos(b) sin(a)   0     0    0    0 0 1;
+    -sin(b)   0    sin(b)  0    0    0 0 0; 
+    -cos(b)   0   -cos(b) -1    0    0 0 0;
+       0      0   -sin(b)  0 -cos(a) 0 0 0;
+       0      0    cos(b)  0  sin(a) 1 0 0; 
+       0   -cos(a)   0     0  cos(a) 0 0 0; 
+       0   -sin(a)   0     1 -sin(a) 0 0 0];
+
+% Define vector of constants
+ B = [0;
+      0; 
+     -P; 
+      0; 
+      0; 
+      0; 
+      0; 
+      0];
 
 % start timer
 tic;
 
 % Note: The vector xGE in GaussElim should be a horizontal vector when output.
-[XGE, determ] = GaussElim(A, B);
+[XGE, determ] = GaussElim(A,B);
 
 % stop timer
 time = toc;

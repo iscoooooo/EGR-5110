@@ -1,32 +1,34 @@
-% -------------MATLAB Script Information-------------x
-%
-% Written by: Francisco Sanudo
-% Date: 2/1/23
-% Updated: 2/9/24
-%
-% PURPOSE
-% This function solves the linear system AX = B using Gaussian elimination
-% with partial pivoting. The function also returns the determinant from the
-% augmented matrix and number of pivots.
-%
-% REFERENCES
-% Solving Sets of Linear Algebraic Equations (notes), P. Nissenson
-%
-% INPUTS
-% - A : Matrix of size n x n containing n^2 known coefficients
-% - B : Column matrix of size n x 1 contaning n unknown constants
-%
-% OUTPUTS
-% - X      : Solution to AX=B of size n x 1
-% - determ : Determinant of A
-%
-% OTHER
-% .m files required              : none
-% Files required (not .m)        : none
-% Built-in MATLAB functions used : size, numel, zeros, abs
-% User-defined functions         : myMax (nested)  
+% -----------------------MATLAB Script Information----------------------x
+%{
+Written by: Francisco Sanudo
+Date: 2/1/23
+Updated: 2/9/24
+
+PURPOSE
+This function solves the linear system AX = B using Gaussian elimination
+with partial pivoting. The function also returns the determinant from the
+augmented matrix and number of pivots.
+
+REFERENCES
+Solving Sets of Linear Algebraic Equations (notes), P. Nissenson
+
+INPUTS
+- A : Matrix of size n x n containing n^2 known coefficients
+- B : Column matrix of size n x 1 contaning n unknown constants
+
+OUTPUTS
+- X      : Solution to AX=B of size n x 1
+- determ : Determinant of A
+
+OTHER
+.m files required              : none
+Files required (not .m)        : none
+Built-in MATLAB functions used : size, numel, zeros, abs
+User-defined functions         : myMax (nested)
+%}
 
 function [X, determ] = GaussElim(A, B)
+
 %% 0.0 Pre-processsing & Error Handling
 
 n = size(A,1); % number of equations/unknowns
@@ -119,7 +121,7 @@ the input array 'A' and compares each element to the current maximum
 value. After looping through all the elements, the largest number in the
 array is returned as 'maximum'. The function also returns the index of
 the largest element in the array.
-                                  %}
+%}
 
     function [maximum, idx] = myMax(A)
         maximum = A(1);
