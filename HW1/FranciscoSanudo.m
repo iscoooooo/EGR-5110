@@ -18,9 +18,7 @@ for k = 1:n-1
     [max_mag,idx]  = myMax(abs(a(k:n,k))); 
 
     if abs(a(k,k)) < max_mag
-        temp     = a(k,:);    
-        a(k,:)   = a(k+idx-1,:); 
-        a(k+idx-1,:) = temp;    
+        a([k,k+idx-1],:) = a([k+idx-1,k],:);  
         p = p + 1;             
     end
 
