@@ -57,10 +57,8 @@ for k = 1:n-1
     [max_mag,idx]  = myMax(abs(a(k:n,k))); % return max value and index
 
     if abs(a(k,k)) < max_mag
-        temp     = a(k,:);       % store row k in temp
-        a(k,:)   = a(k+idx-1,:); % place row with highest mag. in row k
-        a(k+idx-1,:) = temp;     % place row k in row with highest mag.
-        p = p + 1;               % increment pivot counter
+        a([k,k+idx-1],:) = a([k+idx-1,k],:); % swap row k with highest mag. row
+        p = p + 1;                           % increment pivot counter
     end
 
     % Forward Elimination pass on all rows i > k:
