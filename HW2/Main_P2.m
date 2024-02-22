@@ -1,33 +1,24 @@
-% need to determine dy analytically 
-
 clc; clear;
-dens = 999;             % fluid density, kg/m^3
-visc = 1e-3;            % fluid viscosity, N s/m^2
-d = 0.25;               % pipe diameter, m
-Q = 0.05;               % volumetric flow rate, m^3/s
-rough = 0.05e-3;        % absolute roughness, m
-fra = 0.008; frb = 0.1; % bounds for bisection method
-fr0 = 0.01;             % initial guess for N-R method
-fr1 = 0.01; fr2 = 0.02; % initial guesses for secant method
-tol = 0.00001;          % tolerance
-% I will adjust the parameters above when grading your assignment, but will select values
-% that will not cause your solvers to fail.
 
-Re = 4*abs(Q)*dens/(pi*d*visc);
+% The user inputs the roughness of the pipes, kinematic viscosity of the
+% fluid, and termination criterion. I will use different values when 
+% testing your code.
+dens = 999;         % fluid density, kg/m^3
+visc = 1e-3;        % fluid viscosity, N s/m^2
+rough = 0.045/1000; % absolute roughness of commercial steel pipe, m
+tol = 1E-5;         % tolerance
 
-y=@(fr) 1./sqrt(fr) + 2.0*log10((rough/d)/3.7 + 2.51./(Re.*sqrt(fr)));
-% dy=@(fr) % I will insert the correct derivative expression when testing your code
-           % When you test your N-R solver, you will need to determine dy
-           
-if(Re >= 4000)
-    [frBis, iterBis, frNR, iterNR, frSec, iterSec] = RootFinder_P1(y, dy, fra, frb, fr0, fr1, fr2, tol);
+% The flowrates in RootFinder_P2.m should be a horizontal vector when output.
+Qstudent = RootFinder_P2(dens, visc, rough, tol);
 
-    fzeroVal = fzero(y, [fra,frb]);
+% The transpose operator converts Qstudent into a column vector.
+Qstudent = Qstudent';
 
-    disp(['Bisection: fr = ', num2str(frBis), ' in ', num2str(iterBis), ' iterations.'])
-    disp(['Newton-Raphson: fr = ', num2str(frNR), ' in ', num2str(iterNR), ' iterations.'])
-    disp(['Secant: fr = ', num2str(frSec), ' in ', num2str(iterSec), ' iterations.'])
-    disp(['fzero: fr = ', num2str(fzeroVal)])
-else
-    disp('Using this program is not appropriate')
-end
+% For comparison with my solutions
+% I will make an M-file named Qinstructorcode.m
+Qinstructor = Qinstructorcode(dens, visc, rough, tol);
+Qinstructor = Qinstructor';
+
+compare = [Qstudent, Qinstructor]; % Combines arrays for side-by-side comparison
+disp('Student Instructor')
+disp(compare)
