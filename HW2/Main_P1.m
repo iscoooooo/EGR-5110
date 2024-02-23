@@ -18,7 +18,8 @@ dy=@(fr) - 1/(2*fr^(3/2)) - 251/(100*Re*fr^(3/2)*log(10)*((10*rough)/(37*d) + 25
            
 if(Re >= 4000)
     tic
-    [frBis, iterBis, frNR, iterNR, frSec, iterSec] = RootFinder_P1(y, dy, fra, frb, fr0, fr1, fr2, tol);
+    [frBis, iterBis, frNR, iterNR, frSec, iterSec] = ...
+        RootFinder_P1(y, dy, fra, frb, fr0, fr1, fr2, tol);
     toc
     
     fzeroVal = fzero(y, [fra,frb]);
