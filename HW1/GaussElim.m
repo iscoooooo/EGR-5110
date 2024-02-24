@@ -1,4 +1,4 @@
-% -----------------------MATLAB Script Information----------------------x
+% -----------------------MATLAB Script Information-----------------------
 %{
 Written by: Francisco Sanudo
 Date: 2/1/23
