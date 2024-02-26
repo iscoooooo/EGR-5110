@@ -2,7 +2,7 @@
 % Written by: Francisco Sanudo
 % Date: 2/22/24
 
-function Q = RootFinder_P2()
+function Q = RootFinder_P2(dens, visc, rough, tol)
 %{
 PURPOSE
 This function calculates the volumetric flowrates through each branch of a 
@@ -30,18 +30,66 @@ Built-in MATLAB functions used : size, numel, zeros, abs
 User-defined functions         : 
 %}
 
-X0    = [1;1];
-F     = @(X) [X(1)^2 + X(1)*X(2) - 10; X(2) + 3*X(1)*X(2)^2 - 57];
-delta = 0.01;
-tol   = 1e-5;
+% Pipe lengths
+L = [200;100;360;200;100;200;300;450]; % [meters]
 
-Q = multivariateRoot(F,X0,delta,tol);
+% Pipe diameters
+D = [123.4;158.6;123.4;123.4;176.2;96.8;123.4;109.8]/1000; % [meters]
+
+% Initial guess
+Q0 = [1200;800;300;900;100;300;300;400]/3600; % [meters^3/sec]
+
+% Perturbation (arbitrary small amount) for estimating Jacobian
+delta = 0.01;
+
+% Determine flowrates
+Q = multivariateRootFinder(@(Q) myFunc(Q,L,D,dens,visc,rough),Q0,delta,tol);
 
 end
 
 %------------------------------------------------------------------------
 
-function [X] = multivariateRoot(FUN,X0,delta,tol)
+function F = myFunc(Q,L,D,dens,visc,rough)
+
+% Gravitational acceleration
+g = 9.81; % [meters/sec^2]
+
+% Calculate Reynold's number for each pipe
+Re = 4.*abs(Q)*dens./(pi.*D.*visc);
+
+% Calculate friction factor for each pipe
+fr = (-1.8.*log10(((rough./D)./3.7).^1.11 + 6.9./Re)).^-2;
+
+% Set of non-linear algebraic equations
+F = [Q(1) + Q(2) - 2000/3600; ...                       % F(1)
+
+     Q(3) + Q(7) + Q(8) - 1000/3600; ...                % F(2)
+
+    -Q(1) + Q(5) + Q(6) + 800/3600; ...                 % F(3)
+
+    -Q(4) - Q(5) - Q(7) + 1300/3600; ...                % F(4)
+
+    -Q(6) - Q(8) + 700/3600; ...                        % F(5)
+ 
+   -(fr(1)*8*L(1)/(pi^2*g*D(1)^5))*Q(1)*abs(Q(1)) + ... % F(6)
+    (fr(2)*8*L(2)/(pi^2*g*D(2)^5))*Q(2)*abs(Q(2)) + ... 
+    (fr(4)*8*L(4)/(pi^2*g*D(4)^5))*Q(4)*abs(Q(4)) - ...
+    (fr(5)*8*L(5)/(pi^2*g*D(5)^5))*Q(5)*abs(Q(5));  ...
+
+   -(fr(3)*8*L(3)/(pi^2*g*D(3)^5))*Q(3)*abs(Q(3)) - ... % F(7)
+    (fr(4)*8*L(4)/(pi^4*g*D(4)^5))*Q(4)*abs(Q(4)) + ...
+    (fr(7)*8*L(7)/(pi^2*g*D(7)^5))*Q(7)*abs(Q(7));  ...
+
+    (fr(5)*8*L(5)/(pi^2*g*D(5)^5))*Q(5)*abs(Q(5)) - ... % F(8)
+    (fr(6)*8*L(6)/(pi^6*g*D(6)^5))*Q(6)*abs(Q(6)) - ...
+    (fr(7)*8*L(7)/(pi^2*g*D(7)^5))*Q(7)*abs(Q(7)) + ...
+    (fr(8)*8*L(8)/(pi^2*g*D(8)^5))*Q(8)*abs(Q(8))];
+
+end
+
+%------------------------------------------------------------------------
+
+function [X] = multivariateRootFinder(FUN,X0,delta,tol)
 %{
 PURPOSE
 multivariate solves systems of nonlinear equations of several variables.
@@ -63,8 +111,8 @@ X - Solution to set of non-linear equations
 %}
 
 % Pre-processing
-k     = 1;
-error = 1;
+k       = 1;
+error   = 1;
 X(:,k)  = X0;
 
 % Begin loop
@@ -89,16 +137,18 @@ while error > tol
     k = k + 1;
 end
 
-X = X(:,end);
+X = X(:,end)';
 
 end
+
+%------------------------------------------------------------------------
 
 function J = Jacobian(FUN,X0,delta)
 % This function estimates the Jacobian of a multivariate, vector-valued
 % function using Finite Differencing.
 
 F = FUN;
-m = numel(X0);      % number of rows
+m = numel(X0);    % number of rows
 n = numel(F(X0)); % number of columns
 
 % Intialize Jacobian matrix

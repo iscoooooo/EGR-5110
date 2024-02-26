@@ -62,7 +62,7 @@ end
 % Plot the results
 figure;
 
-set(gcf,'units','normalized','position', [0, 0, .5, .5], ...
+set(gcf,'units','normalized','position', [0, 0, .4, .5], ...
     'DefaultTextInterpreter','Latex');
 movegui(gcf,'center')
 
@@ -72,6 +72,7 @@ semilogx(tol_values, iter_values, ...
 title('\textbf{Bisection Method}: Iterations vs Tolerance','FontSize',15);
 xlabel('Tolerance','FontSize',15);
 ylabel('Iterations','FontSize',15);
+legend('Iterations','fontsize',14,'interpreter','latex')
 grid on;
 
 end
