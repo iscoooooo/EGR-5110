@@ -55,9 +55,9 @@ function F = myFunc(Q,L,D,dens,visc,rough)
 g = 9.81; % [meters/sec^2]
 
 % Calculate Reynold's number for each pipe
-Re = 4.*abs(Q)*dens./(pi.*D.*visc);
+Re = 4.*abs(Q)*dens./(pi.*D.*visc); 
 
-% Calculate friction factor for each pipe
+% Calculate friction factor for each pipe (Haaland Eq.)
 fr = (-1.8.*log10(((rough./D)./3.7).^1.11 + 6.9./Re)).^-2;
 
 % Set of non-linear algebraic equations
