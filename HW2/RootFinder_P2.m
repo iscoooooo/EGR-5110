@@ -27,7 +27,7 @@ OTHER
 .m files required              : none
 Files required (not .m)        : none
 Built-in MATLAB functions used : size, numel, zeros, abs
-User-defined functions         : 
+User-defined functions         : myFunc, Jacobian, multivariateRootFinder
 %}
 
 % Pipe lengths
