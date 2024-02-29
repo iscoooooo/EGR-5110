@@ -12,3 +12,7 @@
 *.bbl
 *.blg
 *.bib
+
+# miscellaneous files
+*.pptx
+HW1/GaussElim2.m
