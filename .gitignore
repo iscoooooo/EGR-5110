@@ -1,2 +1,14 @@
-/HW1/GaussElim2.m
-/HW1/HW1-Activity.pptx
+*.json
+*.out
+
+# Bah, LaTeX junk
+*.aux
+*.log
+*.synctex.gz
+*.dvi
+*.fdb_latexmk
+*.fls
+*.toc
+*.bbl
+*.blg
+*.bib

@@ -13,5 +13,7 @@ tic
 Q = RootFinder_P2(dens, visc, rough, tol);
 toc
 
-% The transpose operator converts Qstudent into a column vector.
+% The transpose operator converts Q into a column vector.
 Q = Q';
+
+display(Q)
