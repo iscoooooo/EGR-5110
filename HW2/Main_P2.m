@@ -1,4 +1,4 @@
-clc; clear;
+clc; clear; close all
 
 % The user inputs the roughness of the pipes, kinematic viscosity of the
 % fluid, and termination criterion. I will use different values when 
