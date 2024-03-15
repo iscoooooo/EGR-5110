@@ -8,7 +8,7 @@ t0  = 0; tf = 10;          % initial time, final time (normalized units)
 fd  = 0;                   % deceleration coefficient
 N   = 10000;               % initial guess for number of time steps
 dt  = (tf-t0)/N;           % dt = time step (normalized units)
-tol = 0.01;                % tolerance used for termination criteria
+tol = 0.01;                % tolerance used for termination criteria (for extra credit)
 
 % I will adjust the parameters above when grading your assignment
 
