@@ -1,66 +1,57 @@
 function [x,y,vx,vy,t] = myrk4(t0,tf,dt,N,x0,y0,vx0,vy0,fd,tol)
 
-% set of ODEs
-f = @(t,X) myODEs(t,X,fd);
+% Physical parameters
+mu    = 1/82.45;     % Ratio of the moon to earth mass
+G     = 6.674e-11;   % [Nm^2kg^-2] Gravitational constant
+RE    = 6371;        % [km]        Earth radius
+RM    = 1740;        % [km]        Moon radius
+massE = 5.972e24;    % [kg]        Earth mass
+massM = 7.348e22;    % [kg]        Moon mass
+d     = 384400;      % [km]        Characteristic length
+ct    = 375203.2339; % [sec]       Characteristic time
+cv    = d/ct;        % [km/s]      Characteristic speed
 
-mu = 1/82.45;                  % ratio of the moon to earth mass
-d  = 384400;                   % characteristic length [km]
-RE = 6371;                     % Earth radius [km]
-RM = 1740;                     % Moon radius [km]
+% Set of ODEs
+f = @(t,X) myODEs(t,X,mu,fd);
 
-max_iter = 20;
-cond     = true;
-k        = 0;
+% Initial condtions
+X0 = [x0, vx0, y0, vy0];
 
+% Loop conditions
+max_iter   = 20;
+cond       = true;
+k          = 0;
+r1_end_old = NaN;
+
+% Begin loop
 while cond && k < max_iter
-    k=k+1;
+
+    % Increment counter
+    k = k+1;
+
     %% Solver
+    [t,X] = propagator(f, X0, N, dt);
 
-    % initialize variables
-    x  = zeros(N,1); x(1)  = x0;
-    y  = zeros(N,1); y(1)  = y0;
-    vx = zeros(N,1); vx(1) = vx0;
-    vy = zeros(N,1); vy(1) = vy0;
-    t  = zeros(N,1);
-
-    % Begin loop
-    for i = 1:N-1
-
-        % 1st slope estimates
-        k1 = f(t(i), [x(i);vx(i);y(i);vy(i)]);
-
-        % 2nd slope estimates
-        k2 = f(t(i) + 0.5*dt, [x(i) + 0.5*k1(1)*dt; vx(i) + 0.5*k1(2)*dt; ...
-            y(i) + 0.5*k1(3)*dt; vy(i) + 0.5*k1(4)*dt]);
-
-        % 3rd slope estimates
-        k3 = f(t(i) + 0.5*dt, [x(i) + 0.5*k2(1)*dt; vx(i) + 0.5*k2(2)*dt; ...
-            y(i) + 0.5*k2(3)*dt; vy(i) + 0.5*k2(4)*dt]);
-
-        % 4th slope estimates
-        k4 = f(t(i) + 1*dt, [x(i) + 1*k3(1)*dt; vx(i) + 1*k3(2)*dt; ...
-            y(i) + 1*k3(3)*dt; vy(i) + 1*k3(4)*dt]);
-
-        % Update variables
-        x(i+1)  = x(i)  + (dt/6)*(1*k1(1) + 2*k2(1) + 2*k3(1) + 1*k4(1));
-        vx(i+1) = vx(i) + (dt/6)*(1*k1(2) + 2*k2(2) + 2*k3(2) + 1*k4(2));
-        y(i+1)  = y(i)  + (dt/6)*(1*k1(3) + 2*k2(3) + 2*k3(3) + 1*k4(3));
-        vy(i+1) = vy(i) + (dt/6)*(1*k1(4) + 2*k2(4) + 2*k3(4) + 1*k4(4));
-
-        t(i+1) = t(i) + dt;
-    end
+    % Extract position & velocity components
+    x = X(:,1); vx = X(:,2);
+    y = X(:,3); vy = X(:,4);
 
     %% Termination Criteria
 
-    r1_end(k) = ((x(end) + mu)^2 + y(end)^2)^0.5;
+    % Get final value of r1
+    r1_end = ((x(end) + mu)^2 + y(end)^2)^0.5;
 
-    if k ~= 1
-        error = abs((r1_end(k) - r1_end(k-1)) / r1_end(k));
+    if ~isnan(r1_end_old) % check if previous r1 value has been set
+        error = abs((r1_end - r1_end_old) / r1_end);
         if error < tol
             cond = false;
         end
     end
 
+    % Update previous r1 value for next iteration
+    r1_end_old = r1_end;
+
+    % Adjust N and dt for next iteration
     N  = 2*N;
     dt = (tf-t0)/N;
 
@@ -68,77 +59,46 @@ end
 
 %% Plotting
 
-r1 = sqrt((x + mu).^2 + y.^2); % radial distance from earth
-v  = sqrt(vx.^2 + vy.^2);      % speed
+r1 = sqrt((x + mu).^2 + y.^2); % Radial distance from earth
+v  = sqrt(vx.^2 + vy.^2);      % Speed
 
-% Figure 1 properties
-figure(1)
-set(gcf, ...
-    'Units','normalized', ...
-    'Position',[0.2,0.2,0.5,0.6], ...
-    'DefaultTextInterpreter','latex', ...
-    'DefaultLegendInterpreter','latex', ...
-    'DefaultAxesFontSize',20, ...
-    'Color','k', ...
-    'InvertHardCopy', 'off')
+% Figure 1
+figure1 = figure(1);
+applyFigureProperties(figure1, [0.2, 0.2, 0.5, 0.6]);
 
 % Trajectory plot
-hold on
-h1 = plot(x,y,'m');
-h2 = circle(-mu,0,RE/d,'c','c');
-h3 = circle(1-mu,0,RM/d,'w','w');
-hold off
-title('Spacecraft Trajectory')
-xlabel('$x$'), ylabel('$y$')
-legend([h1,h2,h3],{'Trajectory','Earth','Moon'});
+hold on;
+plot(x, y, 'm');
+circle(-mu, 0, RE/d, 'c', 'c');
+circle(1-mu, 0, RM/d, 'w', 'w');
+hold off;
+
+title('Spacecraft Trajectory');
+xlabel('$x$'), ylabel('$y$');
+legend('Trajectory', 'Earth', 'Moon');
 xlim([min(x)*1.1, max(x)*1.1]);
 ylim([min(y)*1.1, max(y)*1.1]);
-grid on, box on, axis equal
 
-% Iterate over all axes and legends in the figure and adjust properties
-allAxes = findall(gcf, 'type', 'axes');
-legends = findobj(gcf, 'Type', 'Legend');
-for ax = allAxes'
-    set(ax, 'Color', 'k', 'XColor', 'w', 'YColor', 'w');
-    ax.Title.Color = 'w'; % Set title color to white
-    set(legends, 'Color', 'k');          % Set legend background color to black
-    set(legends, 'TextColor', 'w');      % Set legend text color to white
-    set(legends, 'EdgeColor', 'w');      % Set legend box edge color to white
-end
+applyAxisAndLegendProperties(figure1);
 
-% Figure 2 properties
-figure(2)
-set(gcf, ...
-    'Units','normalized', ...
-    'Position',[0.3,0.2,0.5,0.6], ...
-    'DefaultTextInterpreter','latex', ...
-    'DefaultLegendInterpreter','latex', ...
-    'DefaultAxesFontSize',20, ...
-    'Color','k', ...
-    'InvertHardCopy', 'off')
+% Figure 2
+figure2 = figure(2);
+applyFigureProperties(figure2, [0.3, 0.2, 0.5, 0.6]);
 
-% r1 vs. v
-hold on
-plot(r1,v,'Color','c')
-xline(RE/d,'r--','LineWidth',2)
-hold off
-title('Phase Space')
-xlabel('$r_1$'), ylabel('$v$')
-legend('Phase','Earth Radius');
+% r1 vs. v plot
+hold on;
+plot(r1, v, 'Color', 'c');
+xline(RE/d, 'r--', 'LineWidth', 2);
+hold off;
+
+title('Phase Space');
+xlabel('$r_1$'), ylabel('$v$');
+legend('Phase', 'Earth Radius');
 xlim([min(r1)*0.9, max(r1)*1.1]);
 ylim([min(v)*0.9, max(v)*1.1]);
-axis equal, grid on, box on
 
-% Iterate over all axes and legends in the figure and adjust properties
-allAxes = findall(gcf, 'type', 'axes');
-legends = findobj(gcf, 'Type', 'Legend');
-for ax = allAxes'
-    set(ax, 'Color', 'k', 'XColor', 'w', 'YColor', 'w');
-    ax.Title.Color = 'w'; % Set title color to white
-    set(legends, 'Color', 'k');          % Set legend background color to black
-    set(legends, 'TextColor', 'w');      % Set legend text color to white
-    set(legends, 'EdgeColor', 'w');      % Set legend box edge color to white
-end
+applyAxisAndLegendProperties(figure2);
+
 
 %% Animation
 
@@ -147,29 +107,109 @@ end
 
 end
 
-function dXdt = myODEs(t,X,fd)
+%% Sub-functions
 
-% ratio of moon to earth mass
-mu = 1/82.45;
+%------------------------------------------------------------------------
 
-% unpack states
+function dXdt = myODEs(t,X,mu,fd)
+
+% Unpack states
 x  = X(1);
 vx = X(2);
 y  = X(3);
 vy = X(4);
 
-% distances from earth/moon to spacecraft
+% Radial distances from the two primary bodies to spacecraft
 r1 = sqrt((x + mu)^2 + y^2);
 r2 = sqrt((x-(1-mu))^2 + y^2);
 
-% accelerations
+% Accelerations
 ax = 2*vy + x - (1-mu)*(x+mu)/r1^3 - mu*(x-(1-mu))/r2^3 - fd*vx;
 ay = -2*vx + y - (1-mu)*y/r1^3 - mu*y/r2^3 - fd*vy;
 
-% construct derivative of state vector
-dXdt = [vx; ax; vy; ay];
+% Construct derivative of state vector
+dXdt = [vx, ax, vy, ay];
 
 end
+
+%------------------------------------------------------------------------
+
+function [t, X] = propagator(funcODE, X0, N, dt)
+
+% Solution array sizing
+numRows = N;
+numCols = numel(X0);
+
+% Initialize variables
+t = zeros(N,1);
+X = zeros(numRows,numCols);
+
+% Set initial condtions
+X(1,:) = X0;
+
+% Begin loop
+for i = 1:N-1
+    % 1st slope estimates
+    k1 = funcODE(t(i), X(i,:));
+
+    % 2nd slope estimates
+    k2 = funcODE(t(i) + 0.5*dt, X(i,:) + 0.5*k1*dt);
+
+    % 3rd slope estimates
+    k3 = funcODE(t(i) + 0.5*dt, X(i,:) + 0.5*k2*dt);
+
+    % 4th slope estimates
+    k4 = funcODE(t(i) + 1*dt, X(i,:) + 1*k3*dt);
+
+    % Update state vector
+    X(i+1,:) = X(i,:) + (dt/6)*(1*k1 + 2*k2 + 2*k3 + 1*k4);
+
+    % Update time
+    t(i+1) = t(i) + dt;
+end
+
+end
+
+%------------------------------------------------------------------------
+
+function applyFigureProperties(figHandle, position)
+set(figHandle, ...
+    'Units', 'normalized', ...
+    'Position', position, ...
+    'DefaultTextInterpreter', 'latex', ...
+    'DefaultLegendInterpreter', 'latex', ...
+    'DefaultAxesFontSize', 20, ...
+    'Color', 'k', ...
+    'InvertHardCopy', 'off');
+end
+
+%------------------------------------------------------------------------
+
+function applyAxisAndLegendProperties(figHandle)
+% Iterate over all axes in the figure and adjust properties
+allAxes = findall(figHandle, 'type', 'axes');
+for ax = allAxes'
+    set(ax, ...
+        'Color', 'k', ...
+        'XColor', 'w', ...
+        'YColor', 'w', ...
+        'GridColor','w', ...
+        'MinorGridColor','w');
+    ax.Title.Color = 'w'; % Set title color to white
+end
+
+% Apply axes-specific commands
+grid(ax, 'on'), box(ax, 'on'), axis(ax, 'equal');
+
+% Adjust legend properties
+legends = findobj(figHandle, 'Type', 'Legend');
+for lg = legends'
+    set(lg, 'Color', 'k', 'TextColor', 'w', 'EdgeColor', 'w');
+end
+
+end
+
+%------------------------------------------------------------------------
 
 function p = circle(x, y, radius, faceColor, edgeColor)
 % circle Plots a circle with specified center, radius, and color.
@@ -192,10 +232,7 @@ rectangle('Position', position, ...
     'EdgeColor', edgeColor);
 
 % Create a proxy object for the circle in the legend
-p = plot(NaN,NaN,edgeColor, 'Marker', 'o', 'MarkerFaceColor', faceColor, 'LineStyle', 'none');
+p = plot(NaN,NaN,edgeColor, 'Marker', 'o', 'MarkerFaceColor', faceColor, ...
+    'LineStyle', 'none');
 
-% % Adjust the axes limits to ensure the circle is fully visible
-% axis equal;
-% xlim([x-radius*1.1, x+radius*1.1]);
-% ylim([y-radius*1.1, y+radius*1.1]);
 end
