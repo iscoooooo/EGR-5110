@@ -102,8 +102,49 @@ applyAxisAndLegendProperties(figure2);
 
 %% Animation
 
-% <If you want to get fancy, you can create an animation of the spaceship flying around
-% the earth and moon for extra credit (see below).>
+% Create figure and apply figure properties
+figure3 = figure(3);
+applyFigureProperties(figure3, [0.2, 0.2, 0.5, 0.6]);
+
+hold on;
+% Static parts: Earth and Moon
+circle(-mu, 0, RE/d, 'c', 'c'); 
+circle(1-mu, 0, RM/d, 'w', 'w'); 
+
+% Spacecraft spacecraft & trajectory initialization
+hSpacecraft = plot(nan, nan, 'mo', 'MarkerFaceColor', 'm');
+trajectoryPlot = plot(x(1), y(1), 'm','HandleVisibility','off');
+
+% Set plot limits and labels
+xlim([min(x)*1.1, max(x)*1.1]);
+ylim([min(y)*1.1, max(y)*1.1]);
+xlabel('$x$'), ylabel('$y$');
+title('Spacecraft Trajectory Animation');
+legend('Earth', 'Moon','Spacecraft');
+
+% Apply axis and legend properties after all plot commands
+applyAxisAndLegendProperties(figure3);
+
+% Pre-rendering the animation with reduced frames
+numPoints = length(x);
+frameSkip = 20; % Adjust frameSkip
+frames(ceil(numPoints/frameSkip)) = struct('cdata',[],'colormap',[]);
+
+j = 1;
+for k = 1:frameSkip:numPoints
+    % Update trajectory plot to include points up to the current one
+    set(trajectoryPlot, 'XData', x(1:k), 'YData', y(1:k));
+    % Update spacecraft position
+    set(hSpacecraft, 'XData', x(k), 'YData', y(k));
+    drawnow;
+    frames(j) = getframe(figure3);
+    j = j + 1;
+end
+
+hold off;
+
+% Playing back the pre-rendered animation at a higher frame rate
+% movie(figure3, frames, 1, 120); % Adjust the playback frame rate as needed
 
 end
 
