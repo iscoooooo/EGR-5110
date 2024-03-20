@@ -225,19 +225,19 @@ Any higher order ODE, that can be solved for the highest derivative term, can be
 Let
 \begin{align*}
     x_1 &= x \\
-    x_2 &= \dot{x} \\
-    x_3 &= y \\
+    x_2 &= y \\
+    x_3 &= \dot{x} \\
     x_4 &= \dot{y}
 \end{align*}
 Thus, 
 \begin{align*}
-    \dot{x_1} &= \dot{x} = x_2  &  \dot{x_3} &= \dot{y} = x_4
+    \dot{x}_1 &= \dot{x} = x_3  &  \dot{x}_2 &= \dot{y} = x_4
     \\
-    \dot{x_2} &= \ddot{x} = 2\dot{y} + x - \frac{\tilde{\mu} \left(x+\mu\right)}{r_1^3} - \frac{\mu \left(x-\tilde{\mu}\right)}{r_2^3} - f_d \dot{x} 
-    & \dot{x_4} &= \ddot{y} = -2\dot{x} + y - \frac{\tilde{\mu}y}{r_1^3} - \frac{\mu y}{r_2^3} - f_d\dot{y}
+    \dot{x}_3 &= \ddot{x} = 2\dot{y} + x - \frac{\tilde{\mu} \left(x+\mu\right)}{r_1^3} - \frac{\mu \left(x-\tilde{\mu}\right)}{r_2^3} - f_d \dot{x} 
+    & \dot{x}_4 &= \ddot{y} = -2\dot{x} + y - \frac{\tilde{\mu}y}{r_1^3} - \frac{\mu y}{r_2^3} - f_d\dot{y}
     \\
-    &= 2x_4 + x_1 - \frac{\tilde{\mu} \left(x_1+\mu\right)}{r_1^3} - \frac{\mu \left(x_1-\tilde{\mu}\right)}{r_2^3} - f_d x_2
-    & &= -2x_2 + y - \frac{\tilde{\mu}x_3}{r_1^3} - \frac{\mu x_3}{r_2^3} - f_d x_4
+    &= 2x_4 + x_1 - \frac{\tilde{\mu} \left(x_1+\mu\right)}{r_1^3} - \frac{\mu \left(x_1-\tilde{\mu}\right)}{r_2^3} - f_d x_3
+    & &= -2x_3 + x_2 - \frac{\tilde{\mu}x_2}{r_1^3} - \frac{\mu x_2}{r_2^3} - f_d x_4
 \end{align*}
 
 Let $\bf{X}$ denote the column vector containing the states $x_1,x_2,x_3,x_4$. This means that
@@ -259,10 +259,10 @@ Let $\bf{X}$ denote the column vector containing the states $x_1,x_2,x_3,x_4$. T
     \end{bmatrix}
     = 
     \begin{bmatrix}
-        x_2 \\[0.2cm]
-        2x_4 + x_1 - \ddfrac{\tilde{\mu} \left(x_1+\mu\right)}{r_1^3} - \ddfrac{\mu \left(x_1-\tilde{\mu}\right)}{r_2^3} - f_d x_2 \\[0.2cm]
+        x_3 \\[0.2cm]
         x_4 \\[0.2cm]
-        -2x_2 + y - \ddfrac{\tilde{\mu}x_3}{r_1^3} - \ddfrac{\mu x_3}{r_2^3} - f_d x_4
+        2x_4 + x_1 - \frac{\tilde{\mu} \left(x_1+\mu\right)}{r_1^3} - \frac{\mu \left(x_1-\tilde{\mu}\right)}{r_2^3} - f_d x_3 \\[0.2cm]
+        -2x_3 + x_2 - \frac{\tilde{\mu}x_2}{r_1^3} - \frac{\mu x_2}{r_2^3} - f_d x_4
     \end{bmatrix}
   \end{empheq}
 
@@ -426,5 +426,39 @@ The results are shown below:
   \label{tab:table2}
 \end{table}
 
+\pagebreak
+
+\section{Lagrange Points}
+
+Recall our state vector and derivative of our states:
+
+\begin{equation*}
+    \bf{X}
+    = \begin{bmatrix}
+         x \\
+         v_x \\
+         y \\
+         v_y
+       \end{bmatrix},
+    \qquad \color{cyan} \dot{\bf{X}} = 
+    \begin{bmatrix}
+        \dot{x} \\
+        \dot{v}_x \\
+        \dot{y} \\
+        \dot{v}_y
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        v_x \\[0.2cm]
+        2v_y + x - \ddfrac{\tilde{\mu} \left(x+\mu\right)}{r_1^3} - \ddfrac{\mu \left(x_1-\tilde{\mu}\right)}{r_2^3} - f_d v_x \\[0.2cm]
+        v_y \\[0.2cm]
+        -2v_x + y - \ddfrac{\tilde{\mu}y}{r_1^3} - \ddfrac{\mu y}{r_2^3} - f_d v_y
+    \end{bmatrix}
+  \end{equation*}
+
+We can define Lagrange points as locations where:
+\begin{equation*}
+    \vec{r}(t) = \vec{r}(0) \rightarrow \deriv{\vec{r}}{t} = 0 \rightarrow \deriv{^2\vec{r}}{t^2} = 0
+\end{equation*}
 
 \end{document}
