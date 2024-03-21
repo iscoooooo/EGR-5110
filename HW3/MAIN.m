@@ -4,8 +4,8 @@ clc; clear; close all;
 
 x0 = 1.2; y0 = 0;          % initial position of spaceship (normalized units)
 vx0 = 0; vy0 = -1.0493571; % initial velocity of spaceship (normalized units)
-t0  = 0; tf = 4;          % initial time, final time (normalized units)
-fd  = 1;                   % deceleration coefficient
+t0  = 0; tf = 15;          % initial time, final time (normalized units)
+fd  = 0;                   % deceleration coefficient
 N   = 1000;               % initial guess for number of time steps
 dt  = (tf-t0)/N;           % dt = time step (normalized units)
 tol = 0.01;                % tolerance used for termination criteria (for extra credit)
