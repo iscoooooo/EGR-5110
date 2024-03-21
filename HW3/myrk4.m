@@ -36,6 +36,18 @@ while cond && k < max_iter
     x = X(:,1); vx = X(:,2);
     y = X(:,3); vy = X(:,4);
 
+    % % check for collision with earth and moon (could place in propagator)
+    % r1_min = min(((x + mu).^2 + y.^2).^0.5);
+    % r2_min = max(((x - 1 + mu).^2 + y.^2).^0.5);
+    % 
+    % if r1_min < RE
+    %     fprintf("Collision with Earth.")
+    %     break
+    % elseif r2_min < RM
+    %     fprintf("Collision with Moon.")
+    %     break
+    % end
+
     %% Termination Criteria
 
     % Get final value of r1
@@ -68,7 +80,7 @@ applyFigureProperties(figure1, [0.2, 0.2, 0.5, 0.6]);
 
 % Trajectory plot
 hold on;
-plot(x, y, 'm');
+plot(x, y, 'm','LineWidth',2);
 circle(-mu, 0, RE/d, 'c', 'c');
 circle(1-mu, 0, RM/d, 'w', 'w');
 hold off;
@@ -76,8 +88,8 @@ hold off;
 title('Spacecraft Trajectory');
 xlabel('$x$'), ylabel('$y$');
 legend('Trajectory', 'Earth', 'Moon');
-xlim([min(x)*1.1, max(x)*1.1]);
-ylim([min(y)*1.1, max(y)*1.1]);
+% xlim([min(x)*1.1, max(x)*1.1]);
+% ylim([min(y)*1.1, max(y)*1.1]);
 
 applyAxisAndLegendProperties(figure1);
 
@@ -87,64 +99,64 @@ applyFigureProperties(figure2, [0.3, 0.2, 0.5, 0.6]);
 
 % r1 vs. v plot
 hold on;
-plot(r1, v, 'Color', 'c');
+plot(r1, v, 'Color', 'c','LineWidth',2);
 xline(RE/d, 'r--', 'LineWidth', 2);
 hold off;
 
 title('Phase Space');
 xlabel('$r_1$'), ylabel('$v$');
 legend('Phase', 'Earth Radius');
-xlim([min(r1)*0.9, max(r1)*1.1]);
-ylim([min(v)*0.9, max(v)*1.1]);
+% xlim([min(r1)*0.9, max(r1)*1.1]);
+% ylim([min(v)*0.9, max(v)*1.1]);
 
 applyAxisAndLegendProperties(figure2);
 
 
 %% Animation
 
-% Create figure and apply figure properties
-figure3 = figure(3);
-applyFigureProperties(figure3, [0.2, 0.2, 0.5, 0.6]);
-
-hold on;
-% Static parts: Earth and Moon
-circle(-mu, 0, RE/d, 'c', 'c'); 
-circle(1-mu, 0, RM/d, 'w', 'w'); 
-
-% Spacecraft spacecraft & trajectory initialization
-hSpacecraft = plot(nan, nan, 'mo', 'MarkerFaceColor', 'm');
-trajectoryPlot = plot(x(1), y(1), 'm','HandleVisibility','off');
-
-% Set plot limits and labels
-xlim([min(x)*1.1, max(x)*1.1]);
-ylim([min(y)*1.1, max(y)*1.1]);
-xlabel('$x$'), ylabel('$y$');
-title('Spacecraft Trajectory Animation');
-legend('Earth', 'Moon','Spacecraft');
-
-% Apply axis and legend properties after all plot commands
-applyAxisAndLegendProperties(figure3);
-
-% Pre-rendering the animation with reduced frames
-numPoints = length(x);
-frameSkip = 20; % Adjust frameSkip
-frames(ceil(numPoints/frameSkip)) = struct('cdata',[],'colormap',[]);
-
-j = 1;
-for k = 1:frameSkip:numPoints
-    % Update trajectory plot to include points up to the current one
-    set(trajectoryPlot, 'XData', x(1:k), 'YData', y(1:k));
-    % Update spacecraft position
-    set(hSpacecraft, 'XData', x(k), 'YData', y(k));
-    drawnow;
-    frames(j) = getframe(figure3);
-    j = j + 1;
-end
-
-hold off;
-
-% Playing back the pre-rendered animation at a higher frame rate
-% movie(figure3, frames, 1, 120); % Adjust the playback frame rate as needed
+% % Create figure and apply figure properties
+% figure3 = figure(3);
+% applyFigureProperties(figure3, [0.2, 0.2, 0.5, 0.6]);
+% 
+% hold on;
+% % Static parts: Earth and Moon
+% circle(-mu, 0, RE/d, 'c', 'c'); 
+% circle(1-mu, 0, RM/d, 'w', 'w'); 
+% 
+% % Spacecraft spacecraft & trajectory initialization
+% hSpacecraft = plot(nan, nan, 'mo', 'MarkerFaceColor', 'm');
+% trajectoryPlot = plot(x(1), y(1), 'm','HandleVisibility','off');
+% 
+% % Set plot limits and labels
+% xlim([min(x)*1.1, max(x)*1.1]);
+% ylim([min(y)*1.1, max(y)*1.1]);
+% xlabel('$x$'), ylabel('$y$');
+% title('Spacecraft Trajectory Animation');
+% legend('Earth', 'Moon','Spacecraft');
+% 
+% % Apply axis and legend properties after all plot commands
+% applyAxisAndLegendProperties(figure3);
+% 
+% % Pre-rendering the animation with reduced frames
+% numPoints = length(x);
+% frameSkip = 20; % Adjust frameSkip
+% frames(ceil(numPoints/frameSkip)) = struct('cdata',[],'colormap',[]);
+% 
+% j = 1;
+% for k = 1:frameSkip:numPoints
+%     % Update trajectory plot to include points up to the current one
+%     set(trajectoryPlot, 'XData', x(1:k), 'YData', y(1:k));
+%     % Update spacecraft position
+%     set(hSpacecraft, 'XData', x(k), 'YData', y(k));
+%     drawnow;
+%     frames(j) = getframe(figure3);
+%     j = j + 1;
+% end
+% 
+% hold off;
+% 
+% % Playing back the pre-rendered animation at a higher frame rate
+% % movie(figure3, frames, 1, 120); % Adjust the playback frame rate as needed
 
 end
 
@@ -253,14 +265,7 @@ end
 %------------------------------------------------------------------------
 
 function p = circle(x, y, radius, faceColor, edgeColor)
-% circle Plots a circle with specified center, radius, and color.
-%
-% Inputs:
-%   x         - x-coordinate of the circle's center
-%   y         - y-coordinate of the circle's center
-%   radius    - Radius of the circle
-%   faceColor - Color of the circle's face
-%   edgeColor - Color of the circle's edge
+% Plots a circle with specified center, radius, and color.
 
 % Calculate the position of the rectangle that will be drawn as a circle
 % The position is defined as [xLeft yBottom width height]
