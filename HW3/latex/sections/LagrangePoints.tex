@@ -1,0 +1,87 @@
+\section{Lagrange Points}
+
+Lagrange points are special locations in the CR3BP rotating reference frame where if one were to place an object with negligible mass at a Lagrange point, with zero velocity, it will remain stationary with respect to the rotating frame.
+
+\vspace{\baselineskip}
+
+In vector equation terms, we can define Lagrange points as locations where:
+\begin{equation*}
+    \vec{r}(t) = \vec{r}(0) \rightarrow \deriv{\vec{r}}{t} = \vec{0} \rightarrow \deriv{^2\vec{r}}{t^2} = \vec{0}
+\end{equation*}
+i.e., the position vector is constant for all time and equal to it's initial position. Therefore, the first and second deivatives of the position vector must be zero at all times.
+
+\vspace{\baselineskip}
+
+Recall our state vector and the derivative of our states:
+
+\begin{equation*}
+    \bf{X}
+    = \begin{bmatrix}
+        \vec{r} \\
+        \vec{v}
+    \end{bmatrix}
+    = \begin{bmatrix}
+        x   \\
+        y   \\
+        v_x \\
+        v_y
+    \end{bmatrix},
+    \qquad \dot{\bf{X}} =
+    \begin{bmatrix}
+        v_x                                                                                                                  \\[0.2cm]
+        v_y                                                                                                                  \\[0.2cm]
+        2v_y + x - \ddfrac{\tilde{\mu} \left(x+\mu\right)}{r_1^3} - \ddfrac{\mu \left(x-\tilde{\mu}\right)}{r_2^3} - f_d v_x \\[0.2cm]
+        -2v_x + y - \ddfrac{\tilde{\mu}y}{r_1^3} - \ddfrac{\mu y}{r_2^3} - f_d v_y
+    \end{bmatrix}
+\end{equation*}
+
+If $\displaystyle \deriv{\vec{r}}{t} = \vec{v} = \vec{0}$ and $\displaystyle \deriv{^2\vec{r}}{t^2} = \deriv{\vec{v}}{t} = \vec{0}$, then the derivative of our state vector $\dot{\textbf{X}}$ must be zero:
+
+\begin{equation*}
+    \dot{\bf{X}} =
+    \begin{bmatrix}
+        v_x                                                                                                                  \\[0.2cm]
+        v_y                                                                                                                  \\[0.2cm]
+        2v_y + x - \ddfrac{\tilde{\mu} \left(x+\mu\right)}{r_1^3} - \ddfrac{\mu \left(x-\tilde{\mu}\right)}{r_2^3} - f_d v_x \\[0.2cm]
+        -2v_x + y - \ddfrac{\tilde{\mu}y}{r_1^3} - \ddfrac{\mu y}{r_2^3} - f_d v_y
+    \end{bmatrix}
+    =
+    {
+    \renewcommand{\arraystretch}{1.2} % Adjusts the row spacing 
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        0 \\
+        0
+    \end{bmatrix}
+    }
+\end{equation*}
+
+Since we asserted that $\displaystyle \deriv{\vec{v}}{t} = \left[v_x \ v_y\right]^T = \vec{0}$, then we must find the values of $x$ and $y$ such that:
+
+\begin{equation}
+    \begin{bmatrix}
+        \textcolor{magenta}{x} - \ddfrac{\tilde{\mu} \left(\textcolor{magenta}{x}+\mu\right)}{r_1^3} - \ddfrac{\mu \left(\textcolor{magenta}{x}-\tilde{\mu}\right)}{r_2^3} \\[0.2cm]
+        \textcolor{magenta}{y} - \ddfrac{\tilde{\mu}\textcolor{magenta}{y}}{r_1^3} - \ddfrac{\mu \textcolor{magenta}{y}}{r_2^3}
+    \end{bmatrix}
+    =
+    {
+    \renewcommand{\arraystretch}{1.2} % Adjusts the row spacing 
+    \begin{bmatrix}
+        0 \\
+        0
+    \end{bmatrix}
+    }
+    \label{eq:roots}
+\end{equation}
+
+\subsection*{\underline{Y-axis:}}
+
+From Equation~(\refeq{eq:roots}), we have
+
+\begin{equation}
+    \textcolor{magenta}{y} \left( 1 - \ddfrac{\left(1-\cred\mu\cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred\mu\cw}{\cg r_2 \cw ^3} \right) = 0
+    \label{eq:rootsY}
+\end{equation}
+
+while the individual terms $\mu$, $1-\mu$, $r_1^3$, and $r_2^3$ cannot be zero based on the given constraints, the value of the entire expression within the parentheses could potentially be zero if the terms subtract to zero. However, let's look at the case where $y$ = 0 -- corresponding to solutions that are collinear with the x-axis -- and later revisit the case where $y \neq 0$.

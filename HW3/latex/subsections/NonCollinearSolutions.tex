@@ -1,0 +1,71 @@
+\subsection*{\underline{Non-collinear Solutions (y $\neq$ 0)}:}
+
+Let's bring back Equations~\eqref{eq:rootsY} \& \eqref{eq:rootsX}:
+\begin{align*}
+    \cm x \cw - \ddfrac{\left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right)}{\cg r_2 \cw ^3} &= 0
+    \\
+    \textcolor{magenta}{y} \left( 1 - \ddfrac{\left(1-\cred\mu\cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred\mu\cw}{\cg r_2 \cw ^3} \right) &= 0
+\end{align*}
+
+
+Recalling the process for the collinear solutions, we looked at the trivial case where the variable $y$ is zero. The next step is to consider what occurs when $y$ is not assumed to be zero, which leads to setting the expression inside the parentheses of Equation~\eqref{eq:rootsY} to zero:
+
+\begin{equation*}
+    1 - \ddfrac{\left(1-\cred\mu\cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred\mu\cw}{\cg r_2 \cw ^3} = 0 \\
+\end{equation*}
+
+However, this introduces a multivariable problem because the norms of the position vectors depend on both $x$ and $y$. Consequently, there are now two unknowns, $x$ and $y$, and two equations. To find a solution, the system of equations can be transformed into a linear system by implementing variable substitutions. This is done by defining new variables, $\alpha$ and $\beta$, to represent the reciprocal of the cube of the norm of the position vectors:
+
+\begin{equation*}
+    \cc \alpha \cw = \ddfrac{1}{\cc r_1 \cw ^3}, \quad \cg \beta \cw = \ddfrac{1}{\cg r_2 \cw ^3}
+\end{equation*}
+
+Subsituting these new variables into our system of non-linear equations:
+\begin{align*}
+    \cm x \cw - \left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right) \cc \alpha \cw 
+    - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right) \cg \beta \cw &= 0
+    \\
+    1 - \left(1-\cred\mu\cw\right) \cc \alpha \cw - \cred\mu\cw \cg \beta \cw &= 0
+\end{align*}
+
+Here, $\alpha$ \& $\beta$ are the independent variables we are solving for. Let's package these two equations into Matrix-vector form $[A]\underbar{\it{x}} + \underbar{\it{b}} = \underbar{0}$:
+
+\begin{equation*}
+    \begin{bmatrix}
+        -\left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right)  &
+        - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right)
+        \\
+        - \left(1-\cred\mu\cw\right) &
+        - \cred\mu\cw
+    \end{bmatrix}
+    \begin{bmatrix}
+        \cc \alpha \\ \cg \beta
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        \cm x \cw \\ 1
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        0 \\ 0
+    \end{bmatrix}
+\end{equation*}
+
+Inverting the system to solve for $\alpha$ \& $\beta$:
+
+\begin{equation*}
+    \begin{bmatrix}
+        \cc \alpha \\ \cg \beta
+    \end{bmatrix}
+    = -
+    \begin{bmatrix}
+        -\left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right)  &
+        - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right)
+        \\
+        \cred\mu\cw - 1 &
+        - \cred\mu\cw
+    \end{bmatrix}^{-1}
+    \begin{bmatrix}
+        \cm x \cw \\ 1
+    \end{bmatrix}
+\end{equation*}

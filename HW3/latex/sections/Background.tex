@@ -1,0 +1,115 @@
+\section{Background}
+
+The \color{magenta} three-body problem \color{white} is a dynamics problem in which a relatively small object is influenced by two much more massive bodies, and the two massive bodies have circular orbits about their barycenter (combined center of mass). The following nonlinear second-order differential equations describe the motion of a spacecraft in orbit about the Earth and Moon:
+\color{cyan}
+\begin{align}
+    \deriv{^2 x}{t^2} & = 2\deriv{y}{t} + x - \frac{\tilde{\mu} \left(x+\mu\right)}{r_1^3} - \frac{\mu \left(x-\tilde{\mu}\right)}{r_2^3} - f_d \deriv{x}{t}
+    \label{eq:ODE1}                                                                                                                                          \\
+    \deriv{^2 y}{t^2} & = -2\deriv{x}{t} + y - \frac{\tilde{\mu}y}{r_1^3} - \frac{\mu y}{r_2^3} - f_d\deriv{y}{t}
+    \label{eq:ODE2}
+\end{align}
+\color{white} where
+\color{orange}
+\begin{equation*}
+    \mu = \frac{1}{82.45} \qquad \tilde{\mu} = 1 - \mu \qquad r_1^2 = \left(x+\mu\right)^2 + y^2 \qquad r_2^2 = \left(x-\tilde{\mu}\right)^2 + y^2
+\end{equation*}
+
+\color{white}
+
+$\mu$ is the ratio of the Moon's mass to Earth's mass, $r_1$ is the distance from the Earth’s center to the
+spacecraft, $r_2$ is the distance from the Moon’s center to the spacecraft, and $f_d$ is a deceleration/acceleration
+coefficient.
+
+\vspace{\baselineskip}
+
+The equations are derived from Newton’s law of motion and the inverse square law of gravitation. We are taking the perspective of someone in a reference frame that is rotating at the same angular speed as the Earth and Moon about their barycenter, so the Earth and Moon appear fixed in this reference frame (only the spaceship will appear to move). It is assumed that the three bodies move in a 2D plane and the x-axis forms a line through the Earth and Moon. The origin is located at the barycenter, the Moon’s center of mass is located at point (1-$\mu$,0), and the Earth’s center of mass is located at point (-$\mu$,0).
+
+\vspace{\baselineskip}
+
+The equation uses normalized units for space and time. A normalized spatial unit of 1 in this coordinate
+system is equal to the characteristic length of the system, which is the distance between the earth and moon
+($d$ = 384,400 km). One normalized time unit is equal to the characteristic time:
+\begin{equation*}
+    t = \sqrt{\frac{d^3}{G\left(m_{earth} + m_{moon}\right)}}
+\end{equation*}
+where $G$ = gravitational constant = $6.67 \times 10^{-11} \SI{}{\ \N\cdot\m^2/\kg^2}$, $m_{earth} = 5.972 \times 10^{24}$ kg, and $m_{moon} = 7.348 \times 10^{22}$ kg. This means one normalized time unit is $3.75 \times 10^5$ s, or 4.34 days.
+
+\pagebreak
+
+\section{System of Coupled First-Order ODEs}
+
+The goal of this assignment is to build an RK4 method ODE solver that solves a set of coupled first-order ODEs from an initial time $t_0$ to a final time $t_f$.
+
+\vspace{\baselineskip}
+
+Recall the first order ODE
+\begin{equation*}
+    \deriv{y}{x} = f(x,y) \quad \text{ with } \quad y(x_0) = y_0
+\end{equation*}
+
+Any higher order ODE, that can be solved for the highest derivative term, can be written as a system of first-order ODEs (\color{magenta} One $n^{\textrm{th}}$ order ODE $\rightarrow$ $n$ 1st order ODEs\color{white}). Applying this to Equation~(\ref{eq:ODE1}) and (\ref{eq:ODE2}):
+
+\vspace{\baselineskip}
+
+Let
+\begin{align*}
+    x_1 & = x       \\
+    x_2 & = y       \\
+    x_3 & = \dot{x} \\
+    x_4 & = \dot{y}
+\end{align*}
+Thus,
+\begin{align*}
+    \dot{x}_1 & = \dot{x} = x_3                                                                                                                       & \dot{x}_2                                                                                  & = \dot{y} = x_4
+    \\
+    \dot{x}_3 & = \ddot{x} = 2\dot{y} + x - \frac{\tilde{\mu} \left(x+\mu\right)}{r_1^3} - \frac{\mu \left(x-\tilde{\mu}\right)}{r_2^3} - f_d \dot{x}
+              & \dot{x}_4                                                                                                                             & = \ddot{y} = -2\dot{x} + y - \frac{\tilde{\mu}y}{r_1^3} - \frac{\mu y}{r_2^3} - f_d\dot{y}
+    \\
+              & = 2x_4 + x_1 - \frac{\tilde{\mu} \left(x_1+\mu\right)}{r_1^3} - \frac{\mu \left(x_1-\tilde{\mu}\right)}{r_2^3} - f_d x_3
+              &                                                                                                                                       & = -2x_3 + x_2 - \frac{\tilde{\mu}x_2}{r_1^3} - \frac{\mu x_2}{r_2^3} - f_d x_4
+\end{align*}
+
+Let $\bf{X}$ denote the column vector containing the states $x_1,x_2,x_3,x_4$. This means that
+
+\begin{empheq}[box=\fbox]{align*}
+    \bf{X}
+    &= \begin{bmatrix}
+        x_1 \\
+        x_2 \\
+        x_3 \\
+        x_4
+    \end{bmatrix},
+    \qquad \color{cyan} \dot{\bf{X}} =
+    \begin{bmatrix}
+        \dot{x}_1 \\
+        \dot{x}_2 \\
+        \dot{x}_3 \\
+        \dot{x}_4
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        x_3                                                                                                                        \\[0.2cm]
+        x_4                                                                                                                        \\[0.2cm]
+        2x_4 + x_1 - \ddfrac{\tilde{\mu} \left(x_1+\mu\right)}{r_1^3} - \ddfrac{\mu \left(x_1-\tilde{\mu}\right)}{r_2^3} - f_d x_3 \\[0.2cm]
+        -2x_3 + x_2 - \ddfrac{\tilde{\mu} \, x_2}{r_1^3} - \ddfrac{\mu \, x_2}{r_2^3} - f_d x_4
+    \end{bmatrix}
+\end{empheq}
+
+\vspace{\baselineskip}
+
+This is a system of coupled first-order ordinary differential equations that require a total of 4 initial condtions to solve. The benefit of writing the equations in this form is that \color{magenta} two 2nd-order equations are reduced to four 1st-order equations \color{white} that can be simultaneously solved for the spacecraft's states (position and velocity), and hence provide us with the time histories of the spacecraft's trajectory relative to the Earth and Moon in the rotating coordinate system.
+
+\vspace{\baselineskip}
+
+The system $\dot{\bf{X}} = f(t,\bf{X})$ can now be solved using the RK4 algorithm for the position and velocity of the spacecraft at $N$ discrete times from $t_0$ to $t_f$, when provided the vector comprising the components of the states at time $t_0$:
+
+\begin{equation*}
+    \textbf{X}(0) =
+    \begin{bmatrix}
+        x_1 & x_2 & x_3 & x_4
+    \end{bmatrix}^T(0)
+    =
+    \begin{bmatrix}
+        x_0 & y_0 & \dot{x}_0 & \dot{y}_0
+    \end{bmatrix}^T
+\end{equation*}
