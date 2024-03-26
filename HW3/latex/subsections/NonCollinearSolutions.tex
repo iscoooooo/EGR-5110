@@ -1,71 +1,157 @@
-\subsection*{\underline{Non-collinear Solutions (y $\neq$ 0)}:}
+\subsection*{\underline{Non-Collinear Solutions (y $\neq$ 0)}:}
 
 Let's bring back Equations~\eqref{eq:rootsY} \& \eqref{eq:rootsX}:
 \begin{align*}
-    \cm x \cw - \ddfrac{\left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right)}{\cg r_2 \cw ^3} &= 0
+    \cm x \cw - \ddfrac{\left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right)}{\cg r_2 \cw ^3} & = 0
     \\
-    \textcolor{magenta}{y} \left( 1 - \ddfrac{\left(1-\cred\mu\cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred\mu\cw}{\cg r_2 \cw ^3} \right) &= 0
+    \textcolor{magenta}{y} \left( 1 - \ddfrac{\left(1-\cred\mu\cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred\mu\cw}{\cg r_2 \cw ^3} \right)                                                          & = 0
 \end{align*}
 
 
 Recalling the process for the collinear solutions, we looked at the trivial case where the variable $y$ is zero. The next step is to consider what occurs when $y$ is not assumed to be zero, which leads to setting the expression inside the parentheses of Equation~\eqref{eq:rootsY} to zero:
 
-\begin{equation*}
+\begin{equation}
     1 - \ddfrac{\left(1-\cred\mu\cw\right)}{\cc r_1 \cw ^3} - \ddfrac{\cred\mu\cw}{\cg r_2 \cw ^3} = 0 \\
-\end{equation*}
+\end{equation}
 
 However, this introduces a multivariable problem because the norms of the position vectors depend on both $x$ and $y$. Consequently, there are now two unknowns, $x$ and $y$, and two equations. To find a solution, the system of equations can be transformed into a linear system by implementing variable substitutions. This is done by defining new variables, $\alpha$ and $\beta$, to represent the reciprocal of the cube of the norm of the position vectors:
 
-\begin{equation*}
+\begin{equation}
     \cc \alpha \cw = \ddfrac{1}{\cc r_1 \cw ^3}, \quad \cg \beta \cw = \ddfrac{1}{\cg r_2 \cw ^3}
-\end{equation*}
+\end{equation}
 
 Subsituting these new variables into our system of non-linear equations:
-\begin{align*}
-    \cm x \cw - \left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right) \cc \alpha \cw 
-    - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right) \cg \beta \cw &= 0
+\begin{align}
+    \cm x \cw - \left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right) \cc \alpha \cw
+    - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right) \cg \beta \cw    & = 0
+    \label{eq:eq9}
     \\
-    1 - \left(1-\cred\mu\cw\right) \cc \alpha \cw - \cred\mu\cw \cg \beta \cw &= 0
+    1 - \left(1-\cred\mu\cw\right) \cc \alpha \cw - \cred\mu\cw \cg \beta \cw & = 0
+    \label{eq:eq10}
+\end{align}
+
+To solve the given system of equations for $\alpha$ and $\beta$, we can use the method of substitution or elimination Given Equation~\eqref{eq:eq10} is simpler, we can start by solving it for one of the variables, say $\alpha$, and then substitute the value of $\alpha$ into the Equation~\eqref{eq:eq9} to solve for $\beta$.
+
+\vspace{\baselineskip}
+
+Let's rearrange Equation~\eqref{eq:eq10} for $\alpha$:
+\begin{align}
+    1 - (1- \cred\mu\cw) \cc \alpha \cw - \cred \mu \cg \beta \cw & = 0 \nonumber                                      \\
+    \Rightarrow \cc \alpha \cw                                    & = \frac{1 - \cred \mu \cg \beta \cw}{1- \cred \mu}
+    \label{eq:eq11}
+\end{align}
+
+Now, we substitute this expression for $\alpha$ into Equation~\eqref{eq:eq9} and solve for $\beta$.
+\begin{align*}
+    \cm x \cw - (1 - \cred \mu \cw)(\cm x \cw + \cred \mu \cw) \left( \ddfrac{1 - \cred \mu \cg\beta}{1 - \cred \mu} \right) - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right) \cg \beta \cw & = 0
+    \\
+    \cm x \cw - (\cm x \cw + \cred \mu \cw)(1 - \cred \mu \cg\beta\cw) - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right) \cg \beta \cw                                                       & = 0
+    \\
+    \cm x \cw - (\cm x \cw - \cred \mu \cg \beta \cm x \cw + \cred \mu \cw - \cred \mu^2 \cg \beta \cw) -
+    \cred \mu \cw (\cm x \cw - 1 \cred \mu \cw) \cg \beta \cw                                                                                                                                       & = 0
+    \\
+    \cred \mu \cg \beta \cm x \cw - \cred \mu \cw + \cred \mu^2 \cg \beta \cw
+    - \cred \mu \cw (\cm x \cw - 1 \cred \mu \cw) \cg \beta \cw                                                                                                                                     & = 0
+    \\
+    \cred\mu\cg\beta \cw \left[\cm x \cw + \cred \mu \cw
+    - (\cm x \cw - 1 + \cred \mu \cw)\right] - \cred \mu \cw                                                                                                                                        & = 0
+    \\
+    \cred \mu \cg \beta \cw - \cred \mu \cw                                                                                                                                                         & = 0
+    \\
+    \Longrightarrow \cg \beta \cw                                                                                                                                                                   & = 1
 \end{align*}
 
-Here, $\alpha$ \& $\beta$ are the independent variables we are solving for. Let's package these two equations into Matrix-vector form $[A]\underbar{\it{x}} + \underbar{\it{b}} = \underbar{0}$:
+With $\beta$ = 1, we can substitute back into the expression for $\alpha$ in Equation~\eqref{eq:eq11} to find:
+\begin{align*}
+    \cc \alpha \cw                 & = \ddfrac{1-\cred\mu}{1-\cred\mu}
+    \\
+    \Longrightarrow \cc \alpha \cw & = 1
+\end{align*}
 
-\begin{equation*}
+With $
     \begin{bmatrix}
-        -\left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right)  &
-        - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right)
-        \\
-        - \left(1-\cred\mu\cw\right) &
-        - \cred\mu\cw
-    \end{bmatrix}
-    \begin{bmatrix}
-        \cc \alpha \\ \cg \beta
-    \end{bmatrix}
-    +
-    \begin{bmatrix}
-        \cm x \cw \\ 1
+        \cc \alpha \\
+        \cg \beta
     \end{bmatrix}
     =
     \begin{bmatrix}
-        0 \\ 0
+        1 \\
+        1
     \end{bmatrix}
-\end{equation*}
-
-Inverting the system to solve for $\alpha$ \& $\beta$:
+$, this implies that:
 
 \begin{equation*}
-    \begin{bmatrix}
-        \cc \alpha \\ \cg \beta
-    \end{bmatrix}
-    = -
-    \begin{bmatrix}
-        -\left(1 - \cred \mu \cw \right) \left(\cm x \cw + \cred \mu \cw\right)  &
-        - \cred \mu \cw \left(\cm x \cw - 1 + \cred\mu\cw\right)
-        \\
-        \cred\mu\cw - 1 &
-        - \cred\mu\cw
-    \end{bmatrix}^{-1}
-    \begin{bmatrix}
-        \cm x \cw \\ 1
-    \end{bmatrix}
+    \cc \alpha \cw = \ddfrac{1}{\cc r_1 \cw ^3} = \cg \beta \cw = \ddfrac{1}{\cg r_2 \cw ^3} = 1
 \end{equation*}
+
+Which means \fcolorbox{cyan}{black}{$\cc r_1 \cw = \cg r_2 \cw = 1$}. In our non-dimensionalized system, this result indicates that $r_1$ \& $r_2$ are equal to the characteristic length of the system, which is one spatial unit and also the distance between the two main bodies. This also means that the remaining Lagrange points are equidistant from each of the two bodies and must form equilateral triangles.
+
+\vspace{\baselineskip}
+
+Given this constraint, let's determine what the values of $x$ \& $y$ are. Recall that:
+
+\begin{equation*}
+    \cc r_1 \cw ^2 = \left(\cm x \cw + \cred \mu \cw\right)^2 + \cm y \cw ^2
+    \qquad \cg r_2 \cw ^2 = \left(\cm x \cw - 1 + \cred \mu \cw\right)^2 + \cm y \cw ^2
+\end{equation*}
+
+Since the norms are equal to one spatial unit, then we have:
+\begin{align}
+    \left(\cm x \cw + \cred \mu \cw\right)^2 + \cm y \cw ^2     & = 1 \label{eq:eq12}
+    \\
+    \left(\cm x \cw - 1 + \cred \mu \cw\right)^2 + \cm y \cw ^2 & = 1 \label{eq:eq13}
+\end{align}
+
+This is a system of two equations with two unknowns. Setting the LHS of Equations~\eqref{eq:eq12} and \eqref{eq:eq13} equal, the $y^2$ terms cancel and we have:
+
+\begin{equation*}
+    \left(\cm x \cw + \cred \mu \cw\right)^2 = \left(\cm x \cw - 1 + \cred \mu \cw\right)^2
+\end{equation*}
+
+Expanding both sides:
+
+\begin{equation*}
+    \cm x\cw^2+2\cred\mu\cm x\cw+\cred\mu\cw^2=
+    \cm x\cw^2-2\cm x\cw+2\cred\mu\cm x\cw-2\cred\mu\cw+
+    \cred\mu\cw^2+1
+\end{equation*}
+
+Cancelling terms on both sides and solving for $x$: 
+
+\begin{align*}
+    0 &= -2\cm x\cw-2\cred\mu\cw+1 \\
+    \Rightarrow \cm x\cw &= 1/2 -\cred\mu\cw
+\end{align*}
+
+\pagebreak
+
+Subsituting this result for $x$ into Equation~\eqref{eq:eq12} leads us to: 
+\begin{align*}
+    \left(\frac{1}{2}\right)^2+\cm y\cw^2 &= 1 \\
+    \cm y\cw^2 &= \cfrac{3}{4} \\
+    \Rightarrow \cm y\cw &= \pm\cfrac{\sqrt{3}}{2}
+\end{align*}
+
+Thus, the $x$ and $y$ coordinates of the remaining Lagrange points are:
+
+\begin{center}
+    \fcolorbox{magenta}{black}{
+        $\cm x\cw = \cfrac{1}{2} -\cred\mu\cw$, \quad $\cm y\cw=\pm\cfrac{\sqrt{3}}{2}$
+    }
+\end{center}
+
+We have now solved for all 5 lagrange points, summarized below in Table~\ref{tab:table4}:
+
+\begin{table}[h]
+    \centering
+    \caption{\cw Lagrange Points for Earth-Moon System}
+    \begin{tabular}{ccc} \toprule
+        {Lagrange Point} & {$x$} & {$y$}   \\ \midrule
+        \cm $L1$ \cw  &  0.837023544523  & 0   \\
+        \cm $L2$ \cw  &  1.155597402589  & 0   \\
+        \cm $L3$ \cw  & -1.005053470159  & 0   \\
+        \cm $L4$ \cw  &  0.487871437234  & $+\sqrt{3}/{2}$   \\
+        \cm $L5$ \cw  &  0.487871437234  & $-\sqrt{3}/{2}$   \\  \bottomrule
+    \end{tabular}
+    \label{tab:table4}
+\end{table}
