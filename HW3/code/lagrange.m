@@ -66,15 +66,79 @@ plot(L1,0,'ro','MarkerFaceColor','r','MarkerSize',10,'HandleVisibility','off')
 plot(L2,0,'go','MarkerFaceColor','g','MarkerSize',10,'HandleVisibility','off')
 plot(L3,0,'bo','MarkerFaceColor','b','MarkerSize',10,'HandleVisibility','off')
 
-%% Solve for Non-Collinear Lagrange Points
+%% Plot Lagrange Point Trajectories (L1-L5)
 
-xguess = 0.8;
+d     = 384400;      % [km] Characteristic length
+RE    = 6371;        % [km] Earth radius
+RM    = 1740;        % [km] Moon Radius
+fd = 0;              % Deceleration coefficient
 
-A = [-(1-mu)*(xguess + mu), -mu*(xguess-1+mu);
-    mu-1, -mu];
-b = [xguess;1];
+t0  = 0; tf = 34;  % intial and final time
+N   = 64000;       % number of steps
+dt  = (tf-t0)/N;   % time step
 
-sol = -A^-1*b;
+% Number of trajectories
+numTrajectories = 5;
 
-alpha = sol(1);
-beta  = sol(2);
+% Lagrange point initial states:
+L_x0 = [0.837023544523, 1.155597402589, -1.005053470159, 0.5-mu, ...
+    0.5-mu];
+L_y0 = [0, 0, 0, sqrt(3)/2, -sqrt(3)/2];
+L_vx0 = [0, 0, -.001, 0, 0];
+L_vy0 = [0, 0, -.108, 0.01, 0.01];
+
+% Label & Color
+labels = ['L1','L2','L3','L4','L5'];
+colors = ['r','g','b','m','w'];
+
+% Initialize cell arrays for outputs
+Lx = cell(1, numTrajectories);
+Ly = cell(1, numTrajectories);
+Lvx = cell(1, numTrajectories);
+Lvy = cell(1, numTrajectories);
+Lt = cell(1, numTrajectories);
+
+for i = 1:numTrajectories
+    % Extract the i-th set of initial conditions
+    x0 = L_x0(i);
+    y0 = L_y0(i);
+    vx0 = L_vx0(i);
+    vy0 = L_vy0(i);
+
+    % ODE Options
+    options = odeset('RelTol',1e-12,'AbsTol',1e-12);
+
+    % Solve for the i-th trajectory
+    [t,X] = ode45(@(t,X) myODEs(t,X,mu,fd), [t0,tf], [x0, y0, vx0, vy0]', options);
+
+    % Store the results
+    Lx{i}  = X(:,1);
+    Ly{i}  = X(:,2);
+    Lvx{i} = X(:,3);
+    Lvy{i} = X(:,4);
+    Lt{i} = t;
+end
+
+% Create figure for trajectory plots
+figure4 = figure(4);
+applyFigureProperties(figure4, [0.2, 0.2, 0.5, 0.6]);
+
+hold on;
+
+% Plot Earth and Moon - Static parts
+circle(-mu, 0, RE/d, 'c', 'c');  % Earth
+circle(1-mu, 0, RM/d, 'w', 'w');  % Moon
+
+% Loop over trajectories and plot each
+for i = 1:numTrajectories
+    plot(Lx{i}, Ly{i}, 'LineWidth',2,'Color',colors(i),'DisplayName',labels(i));
+end
+
+% Enhance the plot
+title('Lagrange Points');
+xlabel('$x$'), ylabel('$y$');
+legend('Earth', 'Moon', 'L1', 'L2','L3','L4','L5')
+axis equal, grid on
+hold off;
+
+applyAxisAndLegendProperties(figure4);
