@@ -15,7 +15,7 @@ cv    = d/ct;        % [km/s]      Characteristic speed
 f = @(t,X) myODEs(t,X,mu,fd);
 
 % Initial condtions
-X0 = [x0, vx0, y0, vy0];
+X0 = [x0, y0, vx0, vy0];
 
 % Loop conditions
 max_iter   = 20;
@@ -33,13 +33,13 @@ while cond && k < max_iter
     [t,X] = propagator(f, X0, N, dt);
 
     % Extract position & velocity components
-    x = X(:,1); vx = X(:,2);
-    y = X(:,3); vy = X(:,4);
+    x = X(:,1); vx = X(:,3);
+    y = X(:,2); vy = X(:,4);
 
     % % check for collision with earth and moon (could place in propagator)
     % r1_min = min(((x + mu).^2 + y.^2).^0.5);
     % r2_min = max(((x - 1 + mu).^2 + y.^2).^0.5);
-    % 
+    %
     % if r1_min < RE
     %     fprintf("Collision with Earth.")
     %     break
@@ -106,57 +106,68 @@ hold off;
 title('Phase Space');
 xlabel('$r_1$'), ylabel('$v$');
 legend('Phase', 'Earth Radius');
-% xlim([min(r1)*0.9, max(r1)*1.1]);
-% ylim([min(v)*0.9, max(v)*1.1]);
 
 applyAxisAndLegendProperties(figure2);
 
 
 %% Animation
 
-% % Create figure and apply figure properties
-% figure3 = figure(3);
-% applyFigureProperties(figure3, [0.2, 0.2, 0.5, 0.6]);
-% 
-% hold on;
-% % Static parts: Earth and Moon
-% circle(-mu, 0, RE/d, 'c', 'c'); 
-% circle(1-mu, 0, RM/d, 'w', 'w'); 
-% 
-% % Spacecraft spacecraft & trajectory initialization
-% hSpacecraft = plot(nan, nan, 'mo', 'MarkerFaceColor', 'm');
-% trajectoryPlot = plot(x(1), y(1), 'm','HandleVisibility','off');
-% 
-% % Set plot limits and labels
-% xlim([min(x)*1.1, max(x)*1.1]);
-% ylim([min(y)*1.1, max(y)*1.1]);
-% xlabel('$x$'), ylabel('$y$');
-% title('Spacecraft Trajectory Animation');
-% legend('Earth', 'Moon','Spacecraft');
-% 
-% % Apply axis and legend properties after all plot commands
-% applyAxisAndLegendProperties(figure3);
-% 
-% % Pre-rendering the animation with reduced frames
-% numPoints = length(x);
-% frameSkip = 20; % Adjust frameSkip
-% frames(ceil(numPoints/frameSkip)) = struct('cdata',[],'colormap',[]);
-% 
-% j = 1;
-% for k = 1:frameSkip:numPoints
-%     % Update trajectory plot to include points up to the current one
-%     set(trajectoryPlot, 'XData', x(1:k), 'YData', y(1:k));
-%     % Update spacecraft position
-%     set(hSpacecraft, 'XData', x(k), 'YData', y(k));
-%     drawnow;
-%     frames(j) = getframe(figure3);
-%     j = j + 1;
-% end
-% 
-% hold off;
-% 
-% % Playing back the pre-rendered animation at a higher frame rate
-% % movie(figure3, frames, 1, 120); % Adjust the playback frame rate as needed
+% Ask user if they want to play the animation
+response = input('Do you want to play the animation? [y/n]: ','s');
+
+% Check the user's response
+if lower(response) == 'y'
+    % User wants to play the animation
+    fprintf('\nPlaying animation...\n\n');
+
+    % Create figure and apply figure properties
+    figure3 = figure(3);
+    applyFigureProperties(figure3, [0.2, 0.2, 0.5, 0.6]);
+
+    hold on;
+    % Static parts: Earth and Moon
+    circle(-mu, 0, RE/d, 'c', 'c');
+    circle(1-mu, 0, RM/d, 'w', 'w');
+
+    % Spacecraft spacecraft & trajectory initialization
+    hSpacecraft = plot(nan, nan, 'mo', 'MarkerFaceColor', 'm');
+    trajectoryPlot = plot(x(1), y(1), 'm','HandleVisibility','off');
+
+    % Set plot limits and labels
+    % xlim([min(x)*1.1, max(x)*1.1]);
+    % ylim([min(y)*1.1, max(y)*1.1]);
+    xlabel('$x$'), ylabel('$y$');
+    title('Spacecraft Trajectory Animation');
+    legend('Earth', 'Moon','Spacecraft');
+
+    % Apply axis and legend properties after all plot commands
+    applyAxisAndLegendProperties(figure3);
+
+    % Pre-rendering the animation with reduced frames
+    numPoints = length(x);
+    frameSkip = 20; % Adjust frameSkip accordingly
+    frames(ceil(numPoints/frameSkip)) = struct('cdata',[],'colormap',[]);
+
+    j = 1;
+    for k = 1:frameSkip:numPoints
+        % Update trajectory plot to include points up to the current one
+        set(trajectoryPlot, 'XData', x(1:k), 'YData', y(1:k));
+        % Update spacecraft position
+        set(hSpacecraft, 'XData', x(k), 'YData', y(k));
+        drawnow;
+        frames(j) = getframe(figure3);
+        j = j + 1;
+    end
+    
+    hold off;
+    
+elseif lower(response) == 'n'
+    % User does not want to play the animation
+    fprintf('\nAnimation skipped.\n\n');
+else
+    % Invalid input
+    fprintf('\nInvalid input. Animation skipped.\n\n');
+end
 
 end
 
@@ -168,8 +179,8 @@ function dXdt = myODEs(t,X,mu,fd)
 
 % Unpack states
 x  = X(1);
-vx = X(2);
-y  = X(3);
+y  = X(2);
+vx = X(3);
 vy = X(4);
 
 % Radial distances from the two primary bodies to spacecraft
@@ -181,7 +192,7 @@ ax = 2*vy + x - (1-mu)*(x+mu)/r1^3 - mu*(x-(1-mu))/r2^3 - fd*vx;
 ay = -2*vx + y - (1-mu)*y/r1^3 - mu*y/r2^3 - fd*vy;
 
 % Construct derivative of state vector
-dXdt = [vx, ax, vy, ay];
+dXdt = [vx, vy, ax, ay];
 
 end
 
