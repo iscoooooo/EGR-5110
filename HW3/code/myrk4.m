@@ -36,18 +36,6 @@ while cond && k < max_iter
     x = X(:,1); vx = X(:,3);
     y = X(:,2); vy = X(:,4);
 
-    % % check for collision with earth and moon (could place in propagator)
-    % r1_min = min(((x + mu).^2 + y.^2).^0.5);
-    % r2_min = max(((x - 1 + mu).^2 + y.^2).^0.5);
-    %
-    % if r1_min < RE
-    %     fprintf("Collision with Earth.")
-    %     break
-    % elseif r2_min < RM
-    %     fprintf("Collision with Moon.")
-    %     break
-    % end
-
     %% Termination Criteria
 
     % Get final value of r1
@@ -109,13 +97,12 @@ legend('Phase', 'Earth Radius');
 
 applyAxisAndLegendProperties(figure2);
 
-
 %% Animation
 
 % Ask user if they want to play the animation
 response = input('Do you want to play the animation? [y/n]: ','s');
 
-% Check the user's response
+% Check response
 if lower(response) == 'y'
     % User wants to play the animation
     fprintf('\nPlaying animation...\n\n');
@@ -129,31 +116,35 @@ if lower(response) == 'y'
     circle(-mu, 0, RE/d, 'c', 'c');
     circle(1-mu, 0, RM/d, 'w', 'w');
 
-    % Spacecraft spacecraft & trajectory initialization
+    % Spacecraft & trajectory initialization
     hSpacecraft = plot(nan, nan, 'mo', 'MarkerFaceColor', 'm');
     trajectoryPlot = plot(x(1), y(1), 'm','HandleVisibility','off');
 
-    % Set plot limits and labels
-    % xlim([min(x)*1.1, max(x)*1.1]);
-    % ylim([min(y)*1.1, max(y)*1.1]);
+    % Set plot properties
     xlabel('$x$'), ylabel('$y$');
     title('Spacecraft Trajectory Animation');
     legend('Earth', 'Moon','Spacecraft');
 
-    % Apply axis and legend properties after all plot commands
+    % Apply axis and legend properties
     applyAxisAndLegendProperties(figure3);
 
-    % Pre-rendering the animation with reduced frames
+    % Create a dynamic text annotation for time
+    timeAnnotation = annotation('textbox', [0.78, 0.05, 0.2, 0.1], 'String', '', ...
+    'LineStyle', 'none', 'FontSize', 14, 'Color', 'w', ...
+    'HorizontalAlignment', 'left', 'VerticalAlignment', 'top');
+
     numPoints = length(x);
-    frameSkip = 20; % Adjust frameSkip accordingly
+    frameSkip = 30; % Adjust frameSkip accordingly
     frames(ceil(numPoints/frameSkip)) = struct('cdata',[],'colormap',[]);
 
     j = 1;
     for k = 1:frameSkip:numPoints
-        % Update trajectory plot to include points up to the current one
+        % Update trajectory plot
         set(trajectoryPlot, 'XData', x(1:k), 'YData', y(1:k));
         % Update spacecraft position
         set(hSpacecraft, 'XData', x(k), 'YData', y(k));
+        % Update time in actual days
+        set(timeAnnotation, 'String', sprintf('Time: %.2f Days', t(k)*ct/60/60/24));
         drawnow;
         frames(j) = getframe(figure3);
         j = j + 1;
@@ -169,13 +160,16 @@ else
     fprintf('\nInvalid input. Animation skipped.\n\n');
 end
 
+% Closest Earth approach
+fprintf("The closest approach to Earth is %.5f (%.2f km)\n\n",min(r1)-RE/d,min(r1)*d-RE)
+
 end
 
 %% Sub-functions
 
 %------------------------------------------------------------------------
 
-function dXdt = myODEs(t,X,mu,fd)
+function dXdt = myODEs(~,X,mu,fd)
 
 % Unpack states
 x  = X(1);
