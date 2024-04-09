@@ -1,4 +1,4 @@
-\subsection*{\underline{Non-Collinear Solutions (y $\neq$ 0)}:}
+\subsection{Non-Collinear Solutions \texorpdfstring{(y $\neq$ 0)}{}}
 
 Let's bring back Equations~\eqref{eq:rootsY} \& \eqref{eq:rootsX}:
 \begin{align*}
@@ -84,7 +84,7 @@ $, this implies that:
     \cc \alpha \cw = \ddfrac{1}{\cc r_1 \cw ^3} = \cg \beta \cw = \ddfrac{1}{\cg r_2 \cw ^3} = 1
 \end{equation*}
 
-Which means \fcolorbox{cyan}{black}{$\cc r_1 \cw = \cg r_2 \cw = 1$}. In our non-dimensionalized system, this result indicates that $r_1$ \& $r_2$ are equal to the characteristic length of the system, which is one spatial unit and also the distance between the two main bodies. This also means that the remaining Lagrange points are equidistant from each of the two bodies and must form equilateral triangles.
+Which means \fcolorbox{cyan}{black}{$\cc r_1 \cw = \cg r_2 \cw = 1$}. In our non-dimensionalized system, this result indicates that $r_1$ \& $r_2$ are equal to the characteristic length of the system, which is one spatial unit and also the distance between the two main bodies. This also means that the remaining Lagrange points are equidistant from each of the two bodies and form equilateral triangles.
 
 \vspace{\baselineskip}
 
@@ -116,20 +116,20 @@ Expanding both sides:
     \cred\mu\cw^2+1
 \end{equation*}
 
-Cancelling terms on both sides and solving for $x$: 
+Cancelling terms on both sides and solving for $x$:
 
 \begin{align*}
-    0 &= -2\cm x\cw-2\cred\mu\cw+1 \\
-    \Rightarrow \cm x\cw &= 1/2 -\cred\mu\cw
+    0                    & = -2\cm x\cw-2\cred\mu\cw+1 \\
+    \Rightarrow \cm x\cw & = 1/2 -\cred\mu\cw
 \end{align*}
 
 \pagebreak
 
-Subsituting this result for $x$ into Equation~\eqref{eq:eq12} leads us to: 
+Subsituting this result for $x$ into Equation~\eqref{eq:eq12} leads us to:
 \begin{align*}
-    \left(\frac{1}{2}\right)^2+\cm y\cw^2 &= 1 \\
-    \cm y\cw^2 &= \cfrac{3}{4} \\
-    \Rightarrow \cm y\cw &= \pm\cfrac{\sqrt{3}}{2}
+    \left(\frac{1}{2}\right)^2+\cm y\cw^2 & = 1                      \\
+    \cm y\cw^2                            & = \cfrac{3}{4}           \\
+    \Rightarrow \cm y\cw                  & = \pm\cfrac{\sqrt{3}}{2}
 \end{align*}
 
 Thus, the $x$ and $y$ coordinates of the remaining Lagrange points are:
@@ -144,14 +144,29 @@ We have now solved for all 5 lagrange points, summarized below in Table~\ref{tab
 
 \begin{table}[h]
     \centering
-    \caption{\cw Lagrange Points for Earth-Moon System}
-    \begin{tabular}{ccc} \toprule
-        {Lagrange Point} & {$x$} & {$y$}   \\ \midrule
-        \cm $L1$ \cw  &  0.837023544523  & 0   \\
-        \cm $L2$ \cw  &  1.155597402589  & 0   \\
-        \cm $L3$ \cw  & -1.005053470159  & 0   \\
-        \cm $L4$ \cw  &  0.487871437234  & $+\sqrt{3}/{2}$   \\
-        \cm $L5$ \cw  &  0.487871437234  & $-\sqrt{3}/{2}$   \\  \bottomrule
+    \caption{Location of the Lagrange Points for Earth-Moon System}
+    \begin{tabular}{
+        |>{\centering\arraybackslash}m{3.2cm}|>{\centering\arraybackslash}m{3.2cm}|>{\centering\arraybackslash}m{3.2cm}|>{\centering\arraybackslash}m{3.2cm}|
+        }
+        \hline
+        \multirow{2}{=}{\centering Lagrange Point} & \multirow{2}{=}{\centering $x$} & \multirow{2}{=}{\centering $y$} & \multirow{2}{=}{\centering Units} \\
+                                           &                    &                     &                 \\
+        \hline
+        \multirow{2}{=}{\centering $L_1$}  & 0.837023544523946  & 0                   & Nondimensional  \\
+                                           & 321751.850515005   & 0                   & Kilometers      \\
+        \hline
+        \multirow{2}{=}{\centering $L_2$}  & 1.155597402589     & 0                   & Nondimensional  \\
+                                           & 444211.641555549   & 0                   & Kilometers      \\
+        \hline
+        \multirow{2}{=}{\centering $L_3$}  & -1.005053470159    & 0                   & Nondimensional  \\
+                                           & -386342.553929263  & 0                   & Kilometer       \\
+        \hline
+        \multirow{2}{=}{\centering $L_4$}  & 0.487871437234688  & 0.866025403784439   & Nondimensional  \\
+                                           & 187537.780473014   & 332900.165214738    & Kilometers      \\
+        \hline
+        \multirow{2}{=}{\centering $L_5$}  & 0.487871437234688  & -0.866025403784439  & Nondimensional  \\
+                                           & 187537.780473014   & -332900.165214738   & Kilometers      \\
+        \hline
     \end{tabular}
     \label{tab:table4}
 \end{table}

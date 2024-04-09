@@ -25,7 +25,7 @@ We shall start with $N$ = 1000 and use a tolerance of tol = 0.01.
 
 \pagebreak
 
-\subsection*{\underline{Scenario 1:}}
+\subsection{Scenario 1}
 
 Initial Conditions:
 \begin{multicols}{4}
@@ -67,7 +67,7 @@ The results are shown below:
 
 \begin{table}[h]
     \centering
-    \caption{\cw Effects of Increasing the Number of Steps}
+    \caption{\cw Effects of Increasing the Number of Steps for Scenario 1}
     \begin{tabular}{cccc} \toprule
         {$N$} & {$\mathrm{d}t$}    & {$r_1$}  & {$\mathrm{Test \ Criterion}$}                 \\ \midrule
         1000  & 0.0150             & 14.7302  & N/A                                           \\
@@ -80,11 +80,11 @@ The results are shown below:
     \label{tab:table1}
 \end{table}
 
-
+Upon completion of the simulation, the closest proximity to the Earth's surface was determined to be $r_1$ = 6947.40 km.
 
 \pagebreak
 
-\subsection*{\underline{Scenario 2:}}
+\subsection{Scenario 2}
 
 Initial Conditions:
 \begin{multicols}{4}
@@ -126,7 +126,7 @@ The results are shown below:
 
 \begin{table}[h]
     \centering
-    \caption{\cw Effects of Increasing the Number of Steps}
+    \caption{\cw Effects of Increasing the Number of Steps for Scenario 2}
     \begin{tabular}{cccc} \toprule
         {$N$} & {$\mathrm{d}t$} & {$r_1$} & {$\mathrm{Test \ Criterion}$}      \\ \midrule
         1000  & 0.0040          & 0.0767  & N/A                                \\
@@ -136,3 +136,5 @@ The results are shown below:
     \end{tabular}
     \label{tab:table2}
 \end{table}
+
+Extending the simulation duration would lead to the solution diverging towards infinity. This outcome is anticipated, as the spacecraft gradually spirals in towards Earth under a sustained deceleration, causing the radial distance $r_1$ to approach zero. A close examination of the equations of motion, as shown in \eqref{eq:ODEset}, reveals that as $r_1$ diminishes towards zero, both $\dot{v}_x$ and $\dot{v}_y$ tend towards negative infinity. To keep things in check, it's a good idea to add a quick check in the numerical code, making sure $r_1$ doesn't dip below Earth's radius. This would stop the simulation from spiraling out of control (my code doesn't do this, yet).
