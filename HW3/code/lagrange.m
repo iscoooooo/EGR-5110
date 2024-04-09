@@ -44,22 +44,23 @@ applyAxisAndLegendProperties(fig)
 % redefine this as a set of non-linear equations and use fsolve
 
 % Define anyonymous functions
-func1 = @(x) x - (1-mu)/(x+mu)^2 + mu/(x-1+mu)^2; % L1 equation
-func2 = @(x) x - (1-mu)/(x+mu)^2 - mu/(x-1+mu)^2; % L2 equation
-func3 = @(x) x + (1-mu)/(x+mu)^2 + mu/(x-1+mu)^2; % L3 equation
+func1 = @(x) x - (1-mu)./(x+mu).^2 + mu./(x-1+mu).^2; % L1 equation
+func2 = @(x) x - (1-mu)./(x+mu).^2 - mu./(x-1+mu).^2; % L2 equation
+func3 = @(x) x + (1-mu)./(x+mu).^2 + mu./(x-1+mu).^2; % L3 equation
 
 % Define intial guesses
 x1_L1 = 0.6;  x2_L1 = 0.7;
 x1_L2 = 1.0;  x2_L2 = 1.1;
 x1_L3 = -0.5; x2_L3 = -0.4;
 
-% Set tolerance
-tol = 1e-12;
+options = optimset('TolFun', 1e-16); % Set function tolerance to 1e-16
 
-% Use secant method to find Lagrange points
-L1 = Secant(func1,x1_L1,x2_L1,tol);
-L2 = Secant(func2,x1_L2,x2_L2,tol);
-L3 = Secant(func3,x1_L3,x2_L3,tol);
+% Use fsolve to find Lagrange points
+L1 = fsolve(func1,[x1_L1;x2_L1],options);
+L2 = fsolve(func2,[x1_L2;x2_L2],options);
+L3 = fsolve(func3,[x1_L3;x2_L3],options);
+
+L1 = L1(1); L2 = L2(1); L3 = L3(1);
 
 % Plot lagrange points on existing figure
 plot(L1,0,'ro','MarkerFaceColor','r','MarkerSize',10,'HandleVisibility','off')
@@ -129,16 +130,61 @@ hold on;
 circle(-mu, 0, RE/d, 'c', 'c');  % Earth
 circle(1-mu, 0, RM/d, 'w', 'w');  % Moon
 
+% Plot lagrange points on figure
+plot(L1,0,'ro','MarkerFaceColor','r','MarkerSize',7,'HandleVisibility','off')
+plot(L2,0,'go','MarkerFaceColor','g','MarkerSize',7,'HandleVisibility','off')
+plot(L3,0,'bo','MarkerFaceColor','b','MarkerSize',7,'HandleVisibility','off')
+plot(0.5-mu,sqrt(3)/2,'mo','MarkerFaceColor','m','MarkerSize',7,'HandleVisibility','off')
+plot(0.5-mu,-sqrt(3)/2,'wo','MarkerFaceColor','w','MarkerSize',7,'HandleVisibility','off')
+
 % Loop over trajectories and plot each
 for i = 1:numTrajectories
     plot(Lx{i}, Ly{i}, 'LineWidth',2,'Color',colors(i),'DisplayName',labels(i));
 end
 
 % Enhance the plot
-title('Lagrange Points');
+% title('Lagrange Points');
 xlabel('$x$'), ylabel('$y$');
 legend('Earth', 'Moon', 'L1', 'L2','L3','L4','L5')
 axis equal, grid on
 hold off;
 
 applyAxisAndLegendProperties(figure4);
+
+%% Pseudo-Potential
+
+xval = -1.3:0.001:1.3;
+yval = -1.3:0.001:1.3;
+
+[x,y] = meshgrid(xval,yval);
+
+r1 = sqrt((x+mu).^2 + y.^2);
+r2 = sqrt((x-1+mu).^2 + y.^2);
+U = (1-mu)./r1 + mu./r2 + 0.5*(x.^2 + y.^2);
+
+figure5 = figure(5);
+applyFigureProperties(figure5, [0.2, 0.2, 0.5, 0.6]);
+
+hold on;
+
+% Plot Pseudopotential contours
+[~,h] = contour(x,y,U);
+xlabel('$x$')
+ylabel('$y$')
+axis equal, grid on
+h.LevelList = 1:.025:2;
+colormap cool
+applyAxisAndLegendProperties(figure5);
+
+% Plot Earth and moon
+circle(-mu, 0, RE/d, 'y', 'y');
+circle(1-mu, 0, RM/d, 'w', 'w');
+
+% Plot lagrange points on figure
+plot(L1,0,'ro','MarkerFaceColor','r','MarkerSize',7,'HandleVisibility','off')
+plot(L2,0,'go','MarkerFaceColor','g','MarkerSize',7,'HandleVisibility','off')
+plot(L3,0,'bo','MarkerFaceColor','b','MarkerSize',7,'HandleVisibility','off')
+plot(0.5-mu,sqrt(3)/2,'co','MarkerFaceColor','c','MarkerSize',7,'HandleVisibility','off')
+plot(0.5-mu,-sqrt(3)/2,'mo','MarkerFaceColor','m','MarkerSize',7,'HandleVisibility','off')
+
+hold off;
