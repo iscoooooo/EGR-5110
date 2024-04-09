@@ -6,7 +6,7 @@
 \usepackage[scaled=0.95]{inconsolata}  % Use a monospaced font, like Inconsolata
 \usepackage{wasysym}
 \usepackage{booktabs}
-\usepackage{multicol}
+\usepackage{multicol,multirow}
 \usepackage{siunitx}
 \usepackage{xfrac}
 \usepackage{extramarks}
@@ -16,8 +16,18 @@
 \usepackage{tikz}
 \usepackage[most]{tcolorbox}
 \usepackage{pagecolor} %% for dark background
+\usepackage{hyperref}
+\usepackage{refcount}
 
 \usetikzlibrary{tikzmark, calc}
+
+\hypersetup{
+    colorlinks=false,       % false: boxed links; true: colored links
+    linkcolor=red,          % color of internal links (change box color with linkbordercolor)
+    citecolor=green,        % color of links to bibliography
+    urlcolor=cyan,           % color of external links
+    pdftitle={EGR 5110 HW3}
+}
 
 \pagecolor{black}
 \definecolor{magenta}{RGB}{255,0,255}
@@ -38,6 +48,12 @@
 \newcommand{\cy}{\color{yellow}}
 \newcommand{\co}{\color{orange}}
 
+% Define a color for equation references
+\definecolor{eqrefcolor}{RGB}{255,255,255} % white
+
+% Redefine the format for equation references
+\renewcommand{\theequation}{\textcolor{eqrefcolor}{\arabic{equation}}}
+
 % %% make subscripts smaller
 % \begingroup\lccode`~=`_
 % \lowercase{\endgroup\def~}#1{_{\scriptscriptstyle#1}}
@@ -52,12 +68,18 @@
 
 \linespread{1.1}
 
+% Define a command to print last page number without hyperlink
+\newcommand*{\lastpagewithoutlink}{%
+    \getpagerefnumber{LastPage}%
+}
+
 \pagestyle{fancy}
 \lhead{\hmwkAuthorName}
 \chead{\hmwkTitle}
 \rhead{\hmwkClass}
 \lfoot{\lastxmark}
-\cfoot{Page \thepage\ of \pageref{LastPage}}
+\cfoot{Page \thepage \ of \lastpagewithoutlink}
+
 
 \renewcommand\headrulewidth{0.4pt}
 \renewcommand\footrulewidth{0.4pt}
@@ -147,7 +169,7 @@
 \newcommand{\deriv}[2]{\frac{d#1}{d#2}}
 
 % For partial derivatives
-\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+\newcommand{\pderiv}[2]{\displaystyle \frac{\partial #1}{\partial #2}}
 
 % Redefine \dfrac if you want all fractions to be in display style automatically
 \newcommand{\ddfrac}[2]{\frac{\displaystyle #1}{\displaystyle #2}}
@@ -180,6 +202,17 @@
 
 \pagebreak
 
+% Make table of contents
+\tableofcontents
+
+\pagebreak
+
+% Make list of figures and tables
+\listoffigures
+\listoftables
+
+\pagebreak
+
 % Background section
 \input{sections/Background.tex}
 
@@ -193,10 +226,20 @@
 % Lagrange Points Section
 \input{sections/LagrangePoints.tex}
 
-% Subesections of Lagrange Points section
+% Subsections of Lagrange Points section
 \input{subsections/CollinearSolutions.tex}
 \input{subsections/NonCollinearSolutions.tex}
 
+\pagebreak
+
+% Stability Section
 \input{sections/Stability.tex}
+
+\pagebreak
+
+% Include references
+\nocite{*} % Include all entries from the .bib file
+\bibliographystyle{plain}
+\bibliography{references}
 
 \end{document}
