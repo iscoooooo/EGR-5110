@@ -14,7 +14,7 @@ $\hookrightarrow$ Bisection Method \
 $\hookrightarrow$ Newton-Raphson Method \
 $\hookrightarrow$ Secant Method
 
-#### Sets of Equations
+#### Set of Equations
 $\hookrightarrow$ Modified Secant Method
 
 ### Solving Ordinary Differential Equations
