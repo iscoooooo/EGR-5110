@@ -32,69 +32,127 @@
 % - tss     : Time to steady-state temperature
 %
 % OTHER
-% .m files required              :
-% Files required (not .m)        :
-% Built-in MATLAB functions used :
-% User-defined functions         :
+% .m files required              : MAIN.m (calling script)
+% Files required (not .m)        : none
+% Built-in MATLAB functions used : sum, zeros, abs, permute, meshgrid, floor
+% User-defined functions         : applyFigureProperties
 
 function [T,Ttipsim,Qfinsim,tss] = calcTvstime(T,Nx,Ny,Nt,lam,kcond,h,dx,dt,Lx,Ly,Lz,Bi,Tb,Tinf)
+%% Compute Temperature Distribution
 
 % Initialize time array
 t = zeros(Nt,1);
 
 % Calculate the temperature distribution at each time step
 for k = 1:Nt-1
-    %% Interior Nodes
+    % Interior Nodes
     for i = 2:Nx-1
         for j = 2:Ny-1
-            T(i,j,k+1) = lam*(T(i-1,j,k) + T(i,j-1,k) + T(i,j+1,k) + T(i,j+1,k)) + (1-4*lam)*T(i,j,k);
+            T(i,j,k+1) = lam*(T(i-1,j,k) + T(i,j-1,k) + T(i+1,j,k) + T(i,j+1,k)) + (1-4*lam)*T(i,j,k);
         end
     end
 
-    %% Right Boundary Nodes
+    % Right Boundary Nodes
     for j = 2:Ny-1
         T(Nx,j,k+1) = lam*(2*T(Nx-1,j,k) + T(Nx,j+1,k) + T(Nx,j-1,k) + 2*Bi*Tinf) + (1-4*lam-2*Bi*lam)*T(Nx,j,k);
     end
 
-    %% Left Boundary Nodes
+    % Left Boundary Nodes
     for j = 1:Ny
         T(1,j,k+1) = Tb;
     end
 
-    %% Top Boundary Nodes ( derive )
+    % Top Boundary Nodes
+    for i = 2:Nx-1
+        T(i,Ny,k+1) = lam*(2*T(i,Ny-1,k) + T(i+1,Ny,k) + T(i-1,Ny,k) + 2*Bi*Tinf) + (1-4*lam-2*Bi*lam)*T(i,Ny,k);
+    end
 
+    % Lower Boundary Nodes
+    for i = 2:Nx-1
+        T(i,1,k+1) = lam*(2*T(i,2,k) + T(i+1,1,k) + T(i-1,1,k) + 2*Bi*Tinf) + (1-4*lam-2*Bi*lam)*T(i,1,k);
+    end
 
-    %% Lower Boundary Nodes ( derive )
-
-
-    %% Top Right Corner
+    % Top Right Corner
     T(Nx,Ny,k+1) = 2*lam*(T(Nx-1,Ny,k) + T(Nx,Ny-1,k) + 2*Bi*Tinf) + (1-4*lam-4*Bi*lam)*T(Nx,Ny,k);
 
-    %% Bottom Right Corner ( derive )
+    % Bottom Right Corner
+    T(Nx,1,k+1) = 2*lam*(T(Nx-1,1,k) + T(Nx,2,k) + 2*Bi*Tinf) + (1-4*lam-4*Bi*lam)*T(Nx,1,k);
 
-
-    %% Update time
+    % Update time
     t(k+1) = t(k) + dt;
-
 end
 
-% Insert code that calculates the average temperature at the tip at the last time step
-Ttipsim = 0;
+% Calculate the average temperature at the tip at the last time step
+Ttipsim = (1/((Ny-2) + 0.5 + 0.5)).*(0.5*T(Nx,1,end) + 0.5*T(Nx,Ny,end) + sum(T(Nx,2:end-1,end)));
 
-% Insert code that calculates the heat rate into the fin at the last time step
+% Calculate the heat rate into the fin at the last time step
 Qfinsim = 0;
+for j = 1:Ny
+    if j == 1 || j == Ny
+        Qfin = kcond*(0.5*dx*Lz)*(T(1,j,end) - T(2,j,end))/dx;
+    else
+        Qfin = kcond*(dx*Lz)*(T(1,j,end) - T(2,j,end))/dx;
+    end
+    Qfinsim = Qfinsim + Qfin;
+end
 
 % Insert code to determine the time needed to reach 0.01% steady state at the tip.
-tss = 0;
+converged = false;
+k = 0;
 
-% Insert code that creates an animation of the temperature distribution (only plot 100 time steps)
+while ~converged
+    k = k + 1;
+
+    Ttipavg = (1/((Ny-2) + 0.5 + 0.5))*(0.5*T(Nx,1,k) + 0.5*T(Nx,Ny,k) + sum(T(Nx,2:end-1,k)));
+
+    error = abs((Ttipsim - Ttipavg)/Ttipsim);
+
+    if error < 0.01
+        converged = true;
+    else
+        tss = t(k) + dt;
+    end
+end
+
+% Transpose Temperature array across all time steps (swap x and y dim)
+T = permute(T, [2, 1, 3]);
+
+%% Animation
 
 xval = 0:dx:Lx;
 yval = 0:dx:Ly;
-
 [x,y] = meshgrid(xval,yval);
 
-[~,h] = contour(x,y,T(:,:,5000)');
-axis equal
-h.LevelList = 0:5:200;
-colorbar
+f = figure;
+position = [0.2, 0.2, 0.5, 0.6];
+applyFigureProperties(f, position)
+
+frameskip = floor(Nt/100);
+dT = 5;
+
+for k = 2:frameskip:Nt
+    [~,h] = contour(x, y, T(:,:,k));
+    set(gca,'TickLabelInterpreter','latex')
+    axis equal;
+    h.LevelList = 0:dT:200; h.ShowText = 'on';
+    colormap('turbo'), colorbar
+    xlabel('Horizontal Position ($m$)');
+    ylabel('Vertical Position ($m$)')
+    tPlot = sprintf('%.2f',t(k)/60);
+    title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes']);
+    axis equal;
+    pause(0.1);  % Adjust pause duration
+end
+
+end
+
+%-------------------------------------------------------------------------
+
+function applyFigureProperties(figHandle, position)
+set(figHandle, ...
+    'Units', 'normalized', ...
+    'Position', position, ...
+    'DefaultTextInterpreter', 'latex', ...
+    'DefaultLegendInterpreter', 'latex', ...
+    'DefaultAxesFontSize', 20);
+end
