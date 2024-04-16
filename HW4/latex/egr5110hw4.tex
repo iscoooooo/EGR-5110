@@ -200,7 +200,7 @@
 \section{Background}
 A long rectangular fin is attached to a heat source. The fin is much longer (into the page) than its other
 dimensions, so heat flow is approximately two-dimensional. Its left side is subjected to a constant base
-temperature of 100 ${}^{\circ}$C and the other three sides experience convection. The fin's initial temperature is\\ 
+temperature of 100 ${}^{\circ}$C and the other three sides experience convection. The fin's initial temperature is\\
 40 ${}^{\circ}$C and the free stream air temperature is 25 ${}^{\circ}$C. \\
 
 Below is a cross sectional view of the fin:
@@ -227,6 +227,124 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
 
 \section{Deriving Node Equations}
 
+In the class notes, we derived the following node equations:
+\begin{align}
+    \shortintertext{Interior Nodes:}
+    T_{i,j}^{k+1}     & = \lambda\left(T_{i-1}^k + T_{i,j-1}^k + T_{i+1,j}^k + T_{i,j+1}^k\right) + (1-4\lambda)T_{i,j}^k                         \\
+    \shortintertext{Left Boundary:}
+    T_{1,j}^{k+1}     & = T_{i,j}^k = T_b \\
+    \shortintertext{Right Boundary (excluding corner nodes):}
+    T_{N_x,j}^{k+1}   & = \lambda\left(2T_{N_x-1,j}^k + T_{N_x,j+1}^k + T_{N_x,j-1}^k + 2BT_{\infty}\right) + (1-4\lambda - 2B\lambda)T_{N_x,j}^k \\
+    \shortintertext{Top-right corner node:}
+    T_{N_x,N_y}^{k+1} & = \lambda\left(2T_{N_x-1,N_y}^k + T_{N_x,N_y-1}^k + 2BT_{\infty}\right) + (1-4\lambda - 4B\lambda)T_{N_x,N_y}^k
+\end{align}
+where $B = \ddfrac{h \Delta x}{k}$, $\lambda = \ddfrac{\alpha \Delta t}{(\Delta x)^2}$, $\alpha = \ddfrac{k}{\rho c_p}$.\\
+
+We must derive the remaining node equations for the top boundary, lower boundary, and the bottom-right corner.\\
+
+The energy balance at all boundary nodes is captured by:
+\[
+\dot{E}_{in} - \dot{E}_{out} + \dot{E}_{generated} = \dot{E}_{stored}    
+\]
+Since the rate of energy flowing out of the control volume is zero ($\dot{E}_{out}$) and there is no energy generation within the control volume ($\dot{E}_{generated}$ = 0), then the equation above simplifies to:
+\[
+\dot{E}_{in} = \dot{E}_{stored}    
+\]
+This implies that:
+\begin{equation}
+    \sum{\dot{Q}_{cond}} + \sum{\dot{Q}_{conv}} = m c_p \pderiv{T}{t}
+    \label{eq:energy}
+\end{equation}  
+This equation represents the balance of heat energy at the node, accounting for both conductive and convective heat transfer rates and the rate of change of stored thermal energy within the fin material. For our numerical simulations, this equation can be discretized further to solve for the temperature distribution over time within the rectangular fin using finite-difference approximations.
+
+\subsection{Top Boundary Nodes}
+
+Consider the nodes located along the top boundary of the rectangular fin ($i$, $N_y$), excluding the corner nodes. These nodes are subject to conduction and convection with the free stream air temperature $T_{\infty}$ .\\
+
+Using Fourier's Law of Conduction ($\dot{Q}_{cond} = kA\pderiv{T}{x}$) and Newton's Law of Cooling ($\dot{Q}_{conv} = hA\Delta T$), let's look at the flow rates coming into the control volume and their discretization:
+
+\begin{itemize}
+    \item $\dot{Q}_{cond_{1}} = kA\ddfrac{\Delta T}{\Delta y} = k(\Delta x \Delta z) \ddfrac{T_{i,1-1}^k - T_{i,1}^k}{\Delta y}$
+    \item $\dot{Q}_{cond_{2}} = kA\ddfrac{\Delta T}{\Delta x} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i+1,N_y}^k - T_{i,1}^k}{\Delta x}$
+    \item $\dot{Q}_{cond_{3}} = kA\ddfrac{\Delta T}{\Delta x} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i-1,N_y}^k - T_{i,1}^k}{\Delta x}$
+    \item $\dot{Q}_{conv} = hA\Delta T = h(\Delta x \Delta z)\left(T_{\infty} - T_{i,1}^k\right)$
+\end{itemize}
+
+Subsituting these expressions in Equation~\eqref{eq:energy} leads to:
+
+\begin{multline*}
+    \rho\left(\Delta x \ddfrac{\Delta y}{2} \Delta z\right) c_p \ddfrac{T_{i,1}^{k+1} - T_{i,1}^k}{\Delta t} = k(\Delta x \Delta z) \ddfrac{T_{i,1-1}^k - T_{i,1}^k}{\Delta y} \\
+    + k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i+1,N_y}^k - T_{i,1}^k}{\Delta x} \\
+    + k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i-1,N_y}^k - T_{i,1}^k}{\Delta x}
+    + h(\Delta x \Delta z)\left(T_{\infty} - T_{i,1}^k\right)
+\end{multline*}
+
+Assuming $\Delta x = \Delta y$, then this simplifies to 
+\begin{center}
+    \noindent \fcolorbox{red}{white}{
+        $T_{i,1}^{k+1} = \lambda\left(2T_{i,1-1}^k + T_{i+1,N_y}^k + T_{i-1,N_y}^k + 2BT_{\infty}\right) + (1-4\lambda-2B\lambda)T_{i,1}^k$
+        }        
+\end{center}
+
+
+\subsection{Lower Boundary Nodes}
+Consider the nodes located along the top boundary of the rectangular fin ($i$, $1$), excluding the corner nodes. These nodes are subject to conduction and convection with the free stream air temperature $T_{\infty}$ .\\
+
+Using Fourier's Law of Conduction and Newton's Law of Cooling, the flow rates coming into the control volume are:
+
+\begin{itemize}
+    \item $\dot{Q}_{cond_{1}} = kA\ddfrac{\Delta T}{\Delta y} = k(\Delta x \Delta z) \ddfrac{T_{i,2}^k - T_{i,1}^k}{\Delta y}$
+    \item $\dot{Q}_{cond_{2}} = kA\ddfrac{\Delta T}{\Delta x} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i-1,1}^k - T_{i,1}^k}{\Delta x}$
+    \item $\dot{Q}_{cond_{3}} = kA\ddfrac{\Delta T}{\Delta x} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i+1,1}^k - T_{i,1}^k}{\Delta x}$
+    \item $\dot{Q}_{conv} = hA\Delta T = h(\Delta x \Delta z)\left(T_{\infty} - T_{i,1}^k\right)$
+\end{itemize}
+
+Subsituting these expressions in Equation~\eqref{eq:energy} leads to:
+
+\begin{multline*}
+    \rho\left(\Delta x \ddfrac{\Delta y}{2} \Delta z\right) c_p \ddfrac{T_{i,N_y}^{k+1} - T_{i,N_y}^k}{\Delta t} = k(\Delta x \Delta z) \ddfrac{T_{i,2}^k - T_{i,1}^k}{\Delta y} \\
+    + k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i-1,1}^k - T_{i,1}^k}{\Delta x} \\
+    + k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{i+1,1}^k - T_{i,1}^k}{\Delta x}
+    + h(\Delta x \Delta z)\left(T_{\infty} - T_{i,1}^k\right)
+\end{multline*}
+
+Assuming $\Delta x = \Delta y$, then this simplifies to 
+\begin{center}
+    \noindent \fcolorbox{red}{white}{
+        $T_{i,1}^{k+1} = \lambda\left(2T_{i,2}^k + T_{i+1,1}^k + T_{i-1,1}^k + 2BT_{\infty}\right) + (1-4\lambda-2B\lambda)T_{i,1}^k$
+        }        
+\end{center}
+
+\pagebreak
+
+\subsection{Bottom-right Corner Node}
+Now, consider the node located on the bottom-right corner of the rectangular fin ($N_x$, $1$). This is also subject subject to conduction and convection with the free stream air temperature $T_{\infty}$ .\\
+
+Using Fourier's Law of Conduction and Newton's Law of Cooling, the flow rates coming into the control volume are:
+
+\begin{itemize}
+    \item $\dot{Q}_{cond_{1}} = kA\ddfrac{\Delta T}{\Delta x} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{N_x-1,1}^k - T_{N_x,1}^k}{\Delta x}$
+    \item $\dot{Q}_{cond_{2}} = kA\ddfrac{\Delta T}{\Delta y} = k(\ddfrac{\Delta x}{2} \Delta z) \ddfrac{T_{N_x,2}^k - T_{N_x,1}^k}{\Delta y}$
+    \item $\dot{Q}_{conv_{1}} = hA\Delta T = k(\ddfrac{\Delta x}{2} \Delta z) \left(T_{\infty} - T_{N_x,1}^k\right)$
+    \item $\dot{Q}_{conv_{2}} = hA\Delta T = h(\ddfrac{\Delta y}{2} \Delta z)\left(T_{\infty} - T_{N_x,1}^k\right)$
+\end{itemize}
+
+Subsituting these expressions in Equation~\eqref{eq:energy} leads to:
+
+\begin{multline*}
+    \rho\left(\ddfrac{\Delta x}{2} \ddfrac{\Delta y}{2} \Delta z\right) c_p \ddfrac{T_{N_x,1}^{k+1} - T_{N_x,1}^k}{\Delta t} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{N_x-1,1}^k - T_{N_x,1}^k}{\Delta x} \\
+    + k(\ddfrac{\Delta x}{2} \Delta z) \ddfrac{T_{N_x,2}^k - T_{N_x,1}^k}{\Delta y} \\
+    + k(\ddfrac{\Delta x}{2} \Delta z) \left(T_{\infty} - T_{N_x,1}^k\right)
+    + h(\ddfrac{\Delta y}{2} \Delta z)\left(T_{\infty} - T_{N_x,1}^k\right)
+\end{multline*}
+
+Assuming $\Delta x = \Delta y$, then this simplifies to 
+\begin{center}
+    \noindent \fcolorbox{red}{white}{
+        $T_{N_x,1}^{k+1} = 2\lambda\left(T_{N_x-1,1}^k + T_{N_x,2}^k + 2BT_{\infty}\right) + (1-4\lambda-4B\lambda)T_{N_x,1}^k$
+        }        
+\end{center}
+
 \pagebreak
 
 \section{Scenarios}
@@ -239,13 +357,13 @@ Let's analyze each scenario based on the values of thermal conductivity ($k_{\te
     \small
     \begin{threeparttable}
         \begin{tabular}{|s|c|c|c|c|c|c|c|c|} \hline
-            {\cellcolor{yellow!50} \bf Scenario} & {\PB{1cm}{$k_{\textrm{cond}}$\\$\left(\frac{\textrm{W}}{\textrm{m} \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{1.2cm}{$\alpha$\\$\left(\frac{\textrm{m}^2}{\textrm{s}}\right)$}} & {\PB{1.1cm}{$h$\\$\left(\frac{\textrm{W}}{\textrm{m}^2 \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{0.8cm}{$t_{ss}$\\(min)}} & {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\1D eqn* (${}^{\circ}$C)}} &  {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\sim* (${}^{\circ}$C)}} & {\PB{1.3cm}{$\dot{Q}$\\1D eqn* (W)}} & {\PB{1.3cm}{$\dot{Q}$\\sim* (W)}}
+            {\cellcolor{yellow!50} \bf Scenario} & {\PB{1cm}{$k_{\textrm{cond}}$                                                                 \\$\left(\frac{\textrm{W}}{\textrm{m} \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{1.2cm}{$\alpha$\\$\left(\frac{\textrm{m}^2}{\textrm{s}}\right)$}} & {\PB{1.1cm}{$h$\\$\left(\frac{\textrm{W}}{\textrm{m}^2 \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{0.8cm}{$t_{ss}$\\(min)}} & {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\1D eqn* (${}^{\circ}$C)}} &  {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\sim* (${}^{\circ}$C)}} & {\PB{1.3cm}{$\dot{Q}$\\1D eqn* (W)}} & {\PB{1.3cm}{$\dot{Q}$\\sim* (W)}}
             \\ \hline
-            Pure Al, fan high   & 240 & \SI{97e-6}{} & 100 & 0.93 & 93.94 & 94.16 & 133.31 & 126.32      \\ \hline
-            Pure Al, fan low    & 240 & \SI{97e-6}{} & 10  & 0.99 & 99.35 & 99.37 & 14.02 & 13.27   \\ \hline
-            AISI 302  &  15 & \SI{4e-6}{} & 100 & 11.23 & 52.54 & 53.57 & 78.49 & 74.32 \\ \hline
-            Low $k$, high $\alpha$  & 3 & \SI{100e-6}{} & 100  & 0.055 & 28.77 & 29.40 & 37.61 & 34.43  \\ \hline
-            High $k$, low $\alpha$  & 100 & \SI{3e-6}{} & 100  & 27.51 & 86.72 & 87.18 & 124.08 & 117.68  \\  \hline
+            Pure Al, fan high                    & 240                           & \SI{97e-6}{}  & 100 & 0.93  & 93.94 & 94.16 & 133.31 & 126.32 \\ \hline
+            Pure Al, fan low                     & 240                           & \SI{97e-6}{}  & 10  & 0.99  & 99.35 & 99.37 & 14.02  & 13.27  \\ \hline
+            AISI 302                             & 15                            & \SI{4e-6}{}   & 100 & 11.23 & 52.54 & 53.57 & 78.49  & 74.32  \\ \hline
+            Low $k$, high $\alpha$               & 3                             & \SI{100e-6}{} & 100 & 0.055 & 28.77 & 29.40 & 37.61  & 34.43  \\ \hline
+            High $k$, low $\alpha$               & 100                           & \SI{3e-6}{}   & 100 & 27.51 & 86.72 & 87.18 & 124.08 & 117.68 \\  \hline
         \end{tabular}
         \label{tab:Scenarios}
         \begin{tablenotes}
@@ -367,7 +485,7 @@ Effect of Adjustments:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{fig/contour5.png}
-    \caption{Steady-State Temperature Distrubution for Scenario 5}
+    \caption{Steady-State Temperature Distrubution for Scenario 5}s
     \label{fig: Plot5}
 \end{figure}
 
