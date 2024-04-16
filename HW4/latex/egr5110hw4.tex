@@ -218,6 +218,7 @@ The time-dependent temperature distribution is governed by the 2D heat diffusion
     \pderiv{T}{t} = \alpha \left( \pderiv{^2 T}{x^2} + \pderiv{^2 T}{y^2}\right)
     \label{eq:2DHeat}
 \end{equation}
+
 where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
 
 \textbf{Goal}: Solve Equation~\eqref{eq:2DHeat} from an initial time $t_0$ to a final time $t_f$ for the temperature distribution across the 2D rectangular fin in Figure~\ref{fig:fin} (as a function of time) using a finite-difference method.
@@ -230,13 +231,15 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
 
 \section{Scenarios}
 
+Let's analyze each scenario based on the values of thermal conductivity ($k_{\textrm{cond}}$), thermal diffusivity ($\alpha$), and convection coefficient ($h$) listed in the table below:
+
 \begin{table}[h]
     \centering
     \caption{Five Scenarios Using an Explicit Finite-Difference Method}
     \small
     \begin{threeparttable}
         \begin{tabular}{|s|c|c|c|c|c|c|c|c|} \hline
-            {\cellcolor{yellow!50} \bf Scenario} & {\PB{1cm}{$k_{\textrm{cond}}$\\$\left(\frac{\textrm{W}}{\textrm{m} \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{1.3cm}{$\alpha$\\$\left(\frac{\textrm{m}^2}{\textrm{s}}\right)$}} & {\PB{1.1cm}{$h$\\$\left(\frac{\textrm{W}}{\textrm{m}^2 \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{1cm}{$t_{ss}$\\(min)}} & {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\1D eqn* (${}^{\circ}$C)}} &  {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\sim* (${}^{\circ}$C)}} & {\PB{1.3cm}{$\dot{Q}$\\1D eqn* (W)}} & {\PB{1.3cm}{$\dot{Q}$\\sim* (W)}}
+            {\cellcolor{yellow!50} \bf Scenario} & {\PB{1cm}{$k_{\textrm{cond}}$\\$\left(\frac{\textrm{W}}{\textrm{m} \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{1.2cm}{$\alpha$\\$\left(\frac{\textrm{m}^2}{\textrm{s}}\right)$}} & {\PB{1.1cm}{$h$\\$\left(\frac{\textrm{W}}{\textrm{m}^2 \, {}^{\circ}\textrm{C}}\right)$}} & {\PB{0.8cm}{$t_{ss}$\\(min)}} & {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\1D eqn* (${}^{\circ}$C)}} &  {\PB{1.3cm}{$T_{\textrm{avg}}$ tip\\sim* (${}^{\circ}$C)}} & {\PB{1.3cm}{$\dot{Q}$\\1D eqn* (W)}} & {\PB{1.3cm}{$\dot{Q}$\\sim* (W)}}
             \\ \hline
             Pure Al, fan high   & 240 & \SI{97e-6}{} & 100 & 0.93 & 93.94 & 94.16 & 133.31 & 126.32      \\ \hline
             Pure Al, fan low    & 240 & \SI{97e-6}{} & 10  & 0.99 & 99.35 & 99.37 & 14.02 & 13.27   \\ \hline
@@ -251,7 +254,11 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
     \end{threeparttable}
 \end{table}
 
+We'll look at how adjusting these parameters affects the temperature distribution, time to reach steady-state, and heat rate into the fin.
+
 \pagebreak
+
+\subsection{Scenario 1: Pure Aluminum, Fan High}
 
 \begin{figure}[h]
     \centering
@@ -260,7 +267,24 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
     \label{fig: Plot1}
 \end{figure}
 
+Simulation Parameters:
+\begin{itemize}
+    \item d$t$ = 0.0012
+    \item $N_t$ = 500,000
+    \item $B$ = $\SI{4.167e-4}{}$
+    \item $\lambda$ = 0.1164
+\end{itemize}
+
+Effect of Adjustments:
+\begin{itemize}
+    \item \textbf{Temperature Distrubution}:
+    \item \textbf{Time to Steady State ($t_{ss}$)}:
+    \item \textbf{Heat Rate ($\dot{Q}$)}:
+\end{itemize}
+
 \pagebreak
+
+\subsection{Scenario 2: Pure Aluminum, Fan Low}
 
 \begin{figure}[h]
     \centering
@@ -269,7 +293,24 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
     \label{fig: Plot2}
 \end{figure}
 
+Simulation Parameters:
+\begin{itemize}
+    \item d$t$ = 0.00015
+    \item $N_t$ = 200,000
+    \item $B$ = $\SI{4.167e-4}{}$
+    \item $\lambda$ = 0.1455
+\end{itemize}
+
+Effect of Adjustments:
+\begin{itemize}
+    \item \textbf{Temperature Distrubution}:
+    \item \textbf{Time to Steady State ($t_{ss}$)}:
+    \item \textbf{Heat Rate ($\dot{Q}$)}:
+\end{itemize}
+
 \pagebreak
+
+\subsection{Scenario 3: Stainless Steel, AISI 302}
 
 \begin{figure}[h]
     \centering
@@ -278,7 +319,24 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
     \label{fig: Plot3}
 \end{figure}
 
+Simulation Parameters:
+\begin{itemize}
+    \item d$t$ = 0.0015
+    \item $N_t$ = 100,000
+    \item $B$ = $\SI{6.667e-3}{}$
+    \item $\lambda$ = 0.06
+\end{itemize}
+
+Effect of Adjustments:
+\begin{itemize}
+    \item \textbf{Temperature Distrubution}:
+    \item \textbf{Time to Steady State ($t_{ss}$)}:
+    \item \textbf{Heat Rate ($\dot{Q}$)}:
+\end{itemize}
+
 \pagebreak
+
+\subsection{Scenario 4: Low $k$, high $\alpha$}
 
 \begin{figure}[h]
     \centering
@@ -287,7 +345,24 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
     \label{fig: Plot4}
 \end{figure}
 
+Simulation Parameters:
+\begin{itemize}
+    \item d$t$ = 0.0015
+    \item $N_t$ = 200,000
+    \item $B$ = $\SI{0.0333}{}$
+    \item $\lambda$ = 0.15
+\end{itemize}
+
+Effect of Adjustments:
+\begin{itemize}
+    \item \textbf{Temperature Distrubution}:
+    \item \textbf{Time to Steady State ($t_{ss}$)}:
+    \item \textbf{Heat Rate ($\dot{Q}$)}:
+\end{itemize}
+
 \pagebreak
+
+\subsection{Scenario 5: High $k$, low $\alpha$}
 
 \begin{figure}[h]
     \centering
@@ -296,5 +371,19 @@ where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
     \label{fig: Plot5}
 \end{figure}
 
+Simulation Parameters:
+\begin{itemize}
+    \item d$t$ = 0.0120
+    \item $N_t$ = 200,000
+    \item $B$ = 0.036
+    \item $\lambda$ = 0.01
+\end{itemize}
+
+Effect of Adjustments:
+\begin{itemize}
+    \item \textbf{Temperature Distrubution}:
+    \item \textbf{Time to Steady State ($t_{ss}$)}:
+    \item \textbf{Heat Rate ($\dot{Q}$)}:
+\end{itemize}
 
 \end{document}
