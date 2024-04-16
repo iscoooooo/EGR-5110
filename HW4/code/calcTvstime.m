@@ -44,7 +44,7 @@ function [T,Ttipsim,Qfinsim,tss] = calcTvstime(T,Nx,Ny,Nt,lam,kcond,h,dx,dt,Lx,L
 t = zeros(Nt,1);
 
 % Calculate the temperature distribution at each time step
-for k = 1:Nt-1
+for k = 1:Nt
     % Interior Nodes
     for i = 2:Nx-1
         for j = 2:Ny-1
@@ -137,10 +137,10 @@ if lower(response) == 'y'
     position = [0.2, 0.2, 0.5, 0.6];
     applyFigureProperties(f, position)
 
-    frameskip = floor(Nt/100);
+    frameskip = 100;
     dT = 5;
 
-    for k = 2:frameskip:Nt
+    for k = 2:floor((Nt-1)/frameskip):Nt
         [~,h] = contour(x, y, T(:,:,k));
         set(gca,'TickLabelInterpreter','latex')
         axis equal;
@@ -151,42 +151,43 @@ if lower(response) == 'y'
         xlabel('\textbf{Horizontal Position} ($m$)');
         ylabel('\textbf{Vertical Position} ($m$)')
         tPlot = sprintf('%.2f',t(k)/60);
-        % title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes']);
+        title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes']);
         axis equal;
         pause(0.01);  % Adjust pause duration
     end
 
 elseif lower(response) == 'n'
     % User does not want to play the animation
-    fprintf('\nAnimation skipped.\n\n');
+    fprintf(['\nAnimation skipped. Displaying temperature distribution at' ...
+        ' the end of the simulation.\n\n']);
+
+    % Show temperature distribution at the end of the simulation
+    xval = 0:dx:Lx;
+    yval = 0:dx:Ly;
+    [x,y] = meshgrid(xval,yval);
+
+    g = figure;
+    position = [0.2, 0.2, 0.5, 0.6];
+    applyFigureProperties(g, position)
+
+    dT = 5;
+
+    [~,l] = contour(x, y, T(:,:,end));
+    set(gca,'TickLabelInterpreter','latex')
+    axis equal;
+    l.LevelList = 0:dT:Tb; l.ShowText = 'on';
+    colormap('turbo'), cbar = colorbar;
+    title(cbar,'$T$ (${}^{\circ}$C)','interpreter','latex')
+    cbar.TickLabelInterpreter = 'latex';  % Set tick label interpreter to LaTeX
+    xlabel('\textbf{Horizontal Position} ($m$)');
+    ylabel('\textbf{Vertical Position} ($m$)')
+    tPlot = sprintf('%.2f',t(end)/60);
+    title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes']);
+    axis equal;
 else
     % Invalid input
     fprintf('\nInvalid input. Animation skipped.\n\n');
 end
-
-% Show temperature distribution at the end of the simulation
-xval = 0:dx:Lx;
-yval = 0:dx:Ly;
-[x,y] = meshgrid(xval,yval);
-
-g = figure;
-position = [0.2, 0.2, 0.5, 0.6];
-applyFigureProperties(g, position)
-
-dT = 5;
-
-[~,l] = contour(x, y, T(:,:,end));
-set(gca,'TickLabelInterpreter','latex')
-axis equal;
-l.LevelList = 0:dT:Tb; l.ShowText = 'on';
-colormap('turbo'), cbar = colorbar;
-title(cbar,'$T$ (${}^{\circ}$C)','interpreter','latex')
-cbar.TickLabelInterpreter = 'latex';  % Set tick label interpreter to LaTeX
-xlabel('\textbf{Horizontal Position} ($m$)');
-ylabel('\textbf{Vertical Position} ($m$)')
-% tPlot = sprintf('%.2f',t(end)/60);
-% title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes']);
-axis equal;
 
 end
 
