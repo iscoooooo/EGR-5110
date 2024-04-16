@@ -19,7 +19,7 @@ Nt = 60000; % number of time steps
 dt = (tf-t0)/Nt; % dt = time step (seconds)
 % Adjust certain parameters to meet the stability criteria.
 
-T = zeros(Nx, Ny, Nt); % Create T array
+T = zeros(Nx, Ny, Nt+1); % Create T array
 T(:,:,1) = 40; % Initial condition (Celsius)
 Tb = 100; % base temperature (Celsius)
 Tinf = 25; % free stream temperature (Celsius)
