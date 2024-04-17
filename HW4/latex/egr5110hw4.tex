@@ -18,7 +18,7 @@
 \usepackage{pagecolor} %% for dark background
 \usepackage{hyperref}
 \usepackage{refcount}
-
+\usepackage{subfigure}
 
 \topmargin=-0.45in
 \evensidemargin=0in
@@ -188,7 +188,14 @@
 % Paragraph box shortcut for tables
 \newcommand{\PB}[2]{\parbox{#1}{\centering #2}}
 
+%% make subscripts smaller
+% \begingroup\lccode`~=`_
+% \lowercase{\endgroup\def~}#1{_{\scriptscriptstyle#1}}
+% \AtBeginDocument{\mathcode`_="8000 \catcode`_=12 }
 
+%% small negative sign
+\newcommand{\dashexp}{\scalebox{0.35}[0.5]{$-$}}
+\newcommand{\dash}{\scalebox{0.5}[1.0]{$-$}}
 
 
 \begin{document}
@@ -221,7 +228,18 @@ The time-dependent temperature distribution is governed by the 2D heat diffusion
 
 where $T$ is temperature and $\alpha$ is the thermal diffusivity coefficient.\\
 
-\textbf{Goal}: Solve Equation~\eqref{eq:2DHeat} from an initial time $t_0$ to a final time $t_f$ for the temperature distribution across the 2D rectangular fin in Figure~\ref{fig:fin} (as a function of time) using a finite-difference method.
+\textbf{Goal}: Solve Equation~\eqref{eq:2DHeat} from an initial time $t_0$ to a final time $t_f$ for the temperature distribution across the 2D rectangular fin in Figure~\ref{fig:fin} (as a function of time) using a finite-difference method.\\
+
+The following figure shows the coordinate system and general discretization of the fin:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.45\textwidth]{fig/finSetup.png}
+    \caption{Coordinate system and discretization of a 2D thin rectangular fin}
+    \label{fig:finSetup}
+\end{figure}
+
+In this setup, the origin is fixed to the bottom-left corner of the fin, $\Delta x$ \& $\Delta y$ represents the node spacings, $N_x$ \& $N_y$ represents the final nodes in the $x$ \& $y$ direction, $i$ \& $j$ are the indices for the $x$ \& $y$ direction, respectively.
 
 \pagebreak
 
@@ -240,7 +258,18 @@ In the class notes, we derived the following node equations:
 \end{align}
 where $B = \ddfrac{h \Delta x}{k}$, $\lambda = \ddfrac{\alpha \Delta t}{(\Delta x)^2}$, $\alpha = \ddfrac{k}{\rho c_p}$.\\
 
-We must derive the remaining node equations for the top boundary, lower boundary, and the bottom-right corner.\\
+We must derive the remaining node equations for the top boundary, lower boundary, and the bottom-right corner:
+
+\begin{figure}[h]
+    \centering
+    \subfigure[Top Nodes]{\includegraphics[width=0.24\textwidth]{fig/topNodes.png}} 
+    \hspace{0.5cm}
+    \subfigure[Bottom Nodes]{\includegraphics[width=0.24\textwidth]{fig/bottomNodes.png}} 
+    \hspace{0.5cm}
+    \subfigure[Corner Node]{\includegraphics[width=0.24\textwidth]{fig/cornerNode.png}}
+    \caption{Visualization of node configurations and boundary conditions}
+    \label{fig:nodes}
+\end{figure}
 
 The energy balance at all boundary nodes is captured by:
 \[
@@ -314,8 +343,6 @@ Assuming $\Delta x = \Delta y$, then this simplifies to
         $T_{i,1}^{k+1} = \lambda\left(2T_{i,2}^k + T_{i+1,1}^k + T_{i-1,1}^k + 2BT_{\infty}\right) + (1-4\lambda-2B\lambda)T_{i,1}^k$
         }        
 \end{center}
-
-\pagebreak
 
 \subsection{Bottom-right Corner Node}
 Now, consider the node located on the bottom-right corner of the rectangular fin ($N_x$, $1$). This is also subject subject to conduction and convection with the free stream air temperature $T_{\infty}$ .\\
