@@ -325,7 +325,7 @@ Using Fourier's Law of Conduction and Newton's Law of Cooling, the flow rates co
 \begin{itemize}
     \item $\dot{Q}_{cond_{1}} = kA\ddfrac{\Delta T}{\Delta x} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{N_x-1,1}^k - T_{N_x,1}^k}{\Delta x}$
     \item $\dot{Q}_{cond_{2}} = kA\ddfrac{\Delta T}{\Delta y} = k(\ddfrac{\Delta x}{2} \Delta z) \ddfrac{T_{N_x,2}^k - T_{N_x,1}^k}{\Delta y}$
-    \item $\dot{Q}_{conv_{1}} = hA\Delta T = k(\ddfrac{\Delta x}{2} \Delta z) \left(T_{\infty} - T_{N_x,1}^k\right)$
+    \item $\dot{Q}_{conv_{1}} = hA\Delta T = h(\ddfrac{\Delta x}{2} \Delta z) \left(T_{\infty} - T_{N_x,1}^k\right)$
     \item $\dot{Q}_{conv_{2}} = hA\Delta T = h(\ddfrac{\Delta y}{2} \Delta z)\left(T_{\infty} - T_{N_x,1}^k\right)$
 \end{itemize}
 
@@ -334,7 +334,7 @@ Subsituting these expressions in Equation~\eqref{eq:energy} leads to:
 \begin{multline*}
     \rho\left(\ddfrac{\Delta x}{2} \ddfrac{\Delta y}{2} \Delta z\right) c_p \ddfrac{T_{N_x,1}^{k+1} - T_{N_x,1}^k}{\Delta t} = k(\ddfrac{\Delta y}{2} \Delta z) \ddfrac{T_{N_x-1,1}^k - T_{N_x,1}^k}{\Delta x} \\
     + k(\ddfrac{\Delta x}{2} \Delta z) \ddfrac{T_{N_x,2}^k - T_{N_x,1}^k}{\Delta y} \\
-    + k(\ddfrac{\Delta x}{2} \Delta z) \left(T_{\infty} - T_{N_x,1}^k\right)
+    + h(\ddfrac{\Delta x}{2} \Delta z) \left(T_{\infty} - T_{N_x,1}^k\right)
     + h(\ddfrac{\Delta y}{2} \Delta z)\left(T_{\infty} - T_{N_x,1}^k\right)
 \end{multline*}
 
