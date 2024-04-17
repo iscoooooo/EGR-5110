@@ -26,10 +26,10 @@
 % - lam   : Fourier number
 %
 % OUTPUTS
-% - T       : Temperature distribution
-% - Tipsim  : Average temperature at the tip at end of simulation
-% - Qinfsim : Heat rate into fin at end of simulation
-% - tss     : Time to steady-state temperature
+% - T       : Temperature distribution array [Nx x Ny x Nt] (Celsius)
+% - Tipsim  : Average temperature at the tip at end of simulation (Celsius)
+% - Qinfsim : Heat rate into fin at end of simulation (W)
+% - tss     : Time to steady-state temperature (seconds)
 %
 % OTHER
 % .m files required              : MAIN.m (calling script)
@@ -98,18 +98,22 @@ for j = 1:Ny
     Qfinsim = Qfinsim + Qfin;
 end
 
-% Insert code to determine the time needed to reach 0.01% steady state at the tip.
+% Calculate the time needed to reach 0.01% steady state at the tip.
 converged = false;
+tol = 0.01/100;
 k = 0;
 
 while ~converged
     k = k + 1;
 
+    % Average temperature at the tip (at the current time step)
     Ttipavg = (1/((Ny-2) + 0.5 + 0.5))*(0.5*T(Nx,1,k) + 0.5*T(Nx,Ny,k) + sum(T(Nx,2:end-1,k)));
 
+    % Compute relative error
     error = abs((Ttipsim - Ttipavg)/Ttipsim);
 
-    if error < 0.01/100
+    % Check if error is less than the specified tolerance
+    if error < tol
         converged = true;
     else
         tss = t(k) + dt;
@@ -129,31 +133,49 @@ if lower(response) == 'y'
     % User wants to play the animation
     fprintf('\nPlaying animation...\n\n');
 
+    % Create 2-D grid coodinates
     xval = 0:dx:Lx;
     yval = 0:dx:Ly;
     [x,y] = meshgrid(xval,yval);
 
+    % Create figure and apply figure properties
     f = figure;
     position = [0.2, 0.2, 0.5, 0.6];
     applyFigureProperties(f, position)
 
+    % Frames to skip
     frameskip = 100;
+
+    % Increment for temperature contours
     dT = 5;
 
+    % Animation loop
     for k = 2:floor((Nt-1)/frameskip):Nt
+        % Plot contour at current time-step
         [~,h] = contour(x, y, T(:,:,k));
-        set(gca,'TickLabelInterpreter','latex')
+
         axis equal;
-        h.LevelList = 0:dT:Tb; h.ShowText = 'on';
-        colormap('turbo'), c = colorbar;
+
+        % Contour properties
+        h.LevelList = 0:dT:Tb;
+        h.ShowText = 'on';
+
+        % Colorbar properties
+        c = colorbar;
         title(c,'$T$ (${}^{\circ}$C)','interpreter','latex')
-        c.TickLabelInterpreter = 'latex';  % Set tick label interpreter to LaTeX
+        c.TickLabelInterpreter = 'latex';
+        colormap('turbo'),
+
+        % Axis properties
+        set(gca,'TickLabelInterpreter','latex')
         xlabel('\textbf{Horizontal Position} ($m$)');
         ylabel('\textbf{Vertical Position} ($m$)')
         tPlot = sprintf('%.2f',t(k)/60);
         title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes']);
         axis equal;
-        pause(0.01);  % Adjust pause duration
+
+        % Adjust animation speed
+        pause(0.01);
     end
 
 elseif lower(response) == 'n'
@@ -161,29 +183,42 @@ elseif lower(response) == 'n'
     fprintf(['\nAnimation skipped. Displaying temperature distribution at' ...
         ' the end of the simulation.\n\n']);
 
-    % Show temperature distribution at the end of the simulation
+    %...Show temperature distribution at the end of the simulation
+
+    % Create 2-D grid coordinates
     xval = 0:dx:Lx;
     yval = 0:dx:Ly;
     [x,y] = meshgrid(xval,yval);
 
+    % Create figure and apply figure properties
     g = figure;
     position = [0.2, 0.2, 0.5, 0.6];
     applyFigureProperties(g, position)
 
+    % Increment for temperature contours
     dT = 5;
 
+    % Plot contours
     [~,l] = contour(x, y, T(:,:,end));
-    set(gca,'TickLabelInterpreter','latex')
     axis equal;
-    l.LevelList = 0:dT:Tb; l.ShowText = 'on';
-    colormap('turbo'), cbar = colorbar;
+
+    % Contour properties
+    l.LevelList = 0:dT:Tb;
+    l.ShowText = 'on';
+
+    % Colorbar properties
+    cbar = colorbar;
     title(cbar,'$T$ (${}^{\circ}$C)','interpreter','latex')
-    cbar.TickLabelInterpreter = 'latex';  % Set tick label interpreter to LaTeX
+    cbar.TickLabelInterpreter = 'latex';
+    colormap('turbo'),
+
+    % Axis properties
+    axis equal;
+    set(gca,'TickLabelInterpreter','latex')
     xlabel('\textbf{Horizontal Position} ($m$)');
     ylabel('\textbf{Vertical Position} ($m$)')
     tPlot = sprintf('%.2f',t(end)/60);
-    title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes']);
-    axis equal;
+    title(['Temperature Distribution (${}^{\circ}$C) at $t$ = ', tPlot, ' minutes'])
 else
     % Invalid input
     fprintf('\nInvalid input. Animation skipped.\n\n');
