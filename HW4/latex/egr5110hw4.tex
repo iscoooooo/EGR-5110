@@ -204,6 +204,15 @@
 
 \pagebreak
 
+% Make table of contents
+\tableofcontents
+
+% Make list of figures and tables
+\listoffigures
+\listoftables
+
+\pagebreak
+
 \section{Background}
 A long rectangular fin is attached to a heat source. The fin is much longer (into the page) than its other
 dimensions, so heat flow is approximately two-dimensional. Its left side is subjected to a constant base
@@ -239,7 +248,7 @@ The following figure shows the coordinate system and general discretization of t
     \label{fig:finSetup}
 \end{figure}
 
-In this setup, the origin is fixed to the bottom-left corner of the fin, $\Delta x$ \& $\Delta y$ represents the node spacings, $N_x$ \& $N_y$ represents the final nodes in the $x$ \& $y$ direction, $i$ \& $j$ are the indices for the $x$ \& $y$ direction, respectively.
+In this setup, the origin is fixed to the bottom-left corner of the fin, $\Delta x$ \& $\Delta y$ represents the node spacings, $N_x$ \& $N_y$ represents the final nodes in the $x$ \& $y$ direction, $i$ \& $j$ are the node indices for the $x$ \& $y$ direction, respectively.
 
 \pagebreak
 
@@ -288,7 +297,14 @@ This equation represents the balance of heat energy at the node, accounting for 
 
 \subsection{Top Boundary Nodes}
 
-Consider the nodes located along the top boundary of the rectangular fin ($i$, $N_y$), excluding the corner nodes. These nodes are subject to conduction and convection with the free stream air temperature $T_{\infty}$ .\\
+Consider the nodes located along the top boundary of the rectangular fin ($i$, $N_y$), excluding the corner nodes. These nodes are subject to conduction and convection with the free stream air temperature $T_{\infty}$.\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig/energyTop.png}
+    \caption{Energy Balance on Top Nodes with Convection Boundary Condition}
+    \label{fig:energyTop}
+\end{figure}
 
 Using Fourier's Law of Conduction ($\dot{Q}_{cond} = kA\pderiv{T}{x}$) and Newton's Law of Cooling ($\dot{Q}_{conv} = hA\Delta T$), let's look at the flow rates coming into the control volume and their discretization:
 
@@ -317,7 +333,14 @@ Assuming $\Delta x = \Delta y$, then this simplifies to
 
 
 \subsection{Lower Boundary Nodes}
-Consider the nodes located along the top boundary of the rectangular fin ($i$, $1$), excluding the corner nodes. These nodes are subject to conduction and convection with the free stream air temperature $T_{\infty}$ .\\
+Consider the nodes located along the top boundary of the rectangular fin ($i$, $1$), excluding the corner nodes. These nodes are subject to conduction and convection with the free stream air temperature $T_{\infty}$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fig/energyBottom.png}
+    \caption{Energy Balance on Bottom Nodes with Convection Boundary Condition}
+    \label{fig:energyBottom}
+\end{figure}
 
 Using Fourier's Law of Conduction and Newton's Law of Cooling, the flow rates coming into the control volume are:
 
@@ -344,8 +367,17 @@ Assuming $\Delta x = \Delta y$, then this simplifies to
         }        
 \end{center}
 
+\pagebreak 
+
 \subsection{Bottom-right Corner Node}
-Now, consider the node located on the bottom-right corner of the rectangular fin ($N_x$, $1$). This is also subject subject to conduction and convection with the free stream air temperature $T_{\infty}$ .\\
+Now, consider the node located on the bottom-right corner of the rectangular fin ($N_x$, $1$). This is also subject subject to conduction and convection with the free stream air temperature $T_{\infty}$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{fig/energyCorner.png}
+    \caption{Energy Balance on Bottom-right Corner Node with Convection Boundary Condition}
+    \label{fig:energyCorner}
+\end{figure}
 
 Using Fourier's Law of Conduction and Newton's Law of Cooling, the flow rates coming into the control volume are:
 
@@ -376,7 +408,12 @@ Assuming $\Delta x = \Delta y$, then this simplifies to
 
 \section{Scenarios}
 
-Let's analyze each scenario based on the values of thermal conductivity ($k_{\textrm{cond}}$), thermal diffusivity ($\alpha$), and convection coefficient ($h$) listed in the table below:
+
+Understanding heat transfer and thermal properties is essential in engineering applications. Thermal conductivity ($k_{cond}$), thermal diffusivity ($\alpha$), and convective heat transfer coefficient ($h$) are key parameters that influence heat flow within materials. \\
+
+Thermal conductivity ($k_{cond}$) denotes a material's ability to conduct heat, indicating how efficiently heat moves through the material. It depends on the material type and structure. Thermal diffusivity ($\alpha$) represents how quickly a material responds to temperature changes and is defined as the ratio of thermal conductivity ($k_{cond}$) to the product of density ($\rho$) and specific heat capacity ($c_p$). Convective heat transfer coefficient ($h$) quantifies heat transfer effectiveness between a solid surface and a fluid (like air or water). This coefficient varies based on fluid properties, flow conditions, and surface characteristics. In the study of temperature distribution in a thin rectangular fin over time, variations in $k_{cond}$, $\alpha$, and $h$ play crucial roles in determining transient and steady-state heat transfer behavior.\\
+
+Let's analyze five scenarios based on the values of thermal conductivity ($k_{\textrm{cond}}$), thermal diffusivity ($\alpha$), and convection coefficient ($h$) listed in the table below:
 
 \begin{table}[h]
     \centering
@@ -439,12 +476,26 @@ Simulation Parameters:
     \item $\lambda$ = 0.1455
 \end{itemize}
 
+Compared to scenario 1, the convective heat transfer coefficient $(h)$ was reduced while holding thermal diffusivity ($\alpha$) and thermal conducitivity $(k_{cond})$ constant. A lower $h$ value means slower heat transfer and potentially higher temperatures near the surface due to reduced cooling efficiency.\\
+
 Effect of Adjustments:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Temperature Distrubution}:
+        \begin{itemize}
+            \item Surface temperatures are higher, with a slightly steeper temperature gradient across the fin.
+            \item Distribution became more non-uniform, with higher temperatures near the base of the fin.
+            \item Heat dissipation became less efficient
+        \end{itemize}
     \item \textbf{Time to Steady State ($t_{ss}$)}:
+        \begin{itemize}
+            \item Slightly longer time to reach steady-state temperature due to slower heat dissipation.
+        \end{itemize}
     \item \textbf{Heat Rate ($\dot{Q}$)}:
-\end{itemize}
+        \begin{itemize}
+            \item Reducing $h$ decreased the convective heat transfer rate, $\dot{Q}_{conv}$, which means that less heat was transferred from the fin's surface to the surrounding air per unit time.
+            \item This resulted in slower cooling of the fin's surface, and thus a smaller $\dot{Q}$ for dissipating heat.
+        \end{itemize}
+\end{enumerate}
 
 \pagebreak
 
@@ -465,12 +516,27 @@ Simulation Parameters:
     \item $\lambda$ = 0.06
 \end{itemize}
 
+Compared to scenario 1, the convective heat transfer coefficient ($h$) was held constant whiile thermal dif-
+fusivity ($\alpha$) and thermal conducitivity ($k_{cond}$) constant. Decreasing $\alpha$ means the material has a lower ability to respond to changes in temperature, implying slower heat propagation. Meanwhile, a decrease in $k$ means the material is less efficient at conducting heat.  \\
+
 Effect of Adjustments:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Temperature Distrubution}:
+        \begin{itemize}
+            \item Decreasing $\alpha$ and $k$ led to a more non-uniform temperature distribution along the fin.
+            \item Steeper temperature gradients are observed, especially near the heat source and fin base.
+        \end{itemize}
     \item \textbf{Time to Steady State ($t_{ss}$)}:
+        \begin{itemize}
+            \item Both decreasing $\alpha$ and $k$ increased the time required for the fin to reach steady state.
+            \item Slower heat propagation and reduced heat conduction prolonged the transient period, as seen in the animation produced by the solver.
+        \end{itemize}
     \item \textbf{Heat Rate ($\dot{Q}$)}:
-\end{itemize}
+        \begin{itemize}
+            \item Decreasing $\alpha$ and $k$ reduced the efficiency of heat transfer into the fin.
+            \item As a result, the heat rate into the fin decreased because of slower heat propagation and reduced heat conduction through the material.
+        \end{itemize}
+\end{enumerate}
 
 \pagebreak
 
@@ -491,12 +557,27 @@ Simulation Parameters:
     \item $\lambda$ = 0.15
 \end{itemize}
 
+Compared to scenario 1, the convective heat transfer coefficient ($h$) and thermal diffusivity ($\alpha$) were essentially held constant while thermal conductivity ($k_{cond}$) was reduced. Because $k_{cond}$ represents the material's ability to conduct heat, decreasing this value implies reduced heat conduction capability through the material. \\
+
 Effect of Adjustments:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Temperature Distrubution}:
+        \begin{itemize}
+            \item Decreasing $k_{cond}$ resulted in a more non-uniform temperature distribution along the fin's length.
+            \item The fin's base and areas near the heat source experienced higher temperatures due to reduced heat dissipation.
+            \item Temperature gradients across the fin became steeper, indicating slower heat propagation through the material.
+        \end{itemize}
     \item \textbf{Time to Steady State ($t_{ss}$)}:
+        \begin{itemize}
+            \item A lower $k_{cond}$ would typically prolong the time required for the fin to reach steady state. 
+            \item Due to a high $\alpha$, this facilitated rapid heat propagation.
+            \item Slower heat conduction due to low $k_{cond}$ combined with a high $\alpha$ and convective effects allowed for thermal equilibrium to be achieved rather quickly.
+        \end{itemize}
     \item \textbf{Heat Rate ($\dot{Q}$)}:
-\end{itemize}
+        \begin{itemize}
+            \item Decreasing $k_{cond}$ reduced the efficiency of heat transfer into the fin, since heat transferred more slowly through the material.
+        \end{itemize}
+\end{enumerate}
 
 \pagebreak
 
@@ -517,11 +598,26 @@ Simulation Parameters:
     \item $\lambda$ = 0.01
 \end{itemize}
 
+Instead of comparing to scenario 1, let's compare to scenario 4. The convective heat transfer coefficient ($h$) was held constant, while the thermal conductivity ($k_{cond}$) was increased and the thermal diffusivity ($\alpha$) were reduced. \\
+
 Effect of Adjustments:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Temperature Distrubution}:
+        \begin{itemize}
+            \item Decreasing $\alpha$ and increasing $k_{cond}$ led to a more uniform temperature distribution across the fin.
+            \item While lower $\alpha$ slows down heat propagation and causes steeper temperature gradients, higher $k_{cond}$ counteracted this by enhancing heat conduction and promoting a more even temperature profile.
+        \end{itemize}
     \item \textbf{Time to Steady State ($t_{ss}$)}:
+        \begin{itemize}
+            \item Increasing $k_{cond}$ reduced the time required for the fin to reach steady state by accelerating heat conduction through the material.
+            \item Despite the slower heat propagation due to lower $\alpha$, the combined effect of increasing $k_{cond}$ resulted in a shorter transient period before achieving thermal equilibrium, as seen in the animation.
+        \end{itemize}
     \item \textbf{Heat Rate ($\dot{Q}$)}:
-\end{itemize}
+        \begin{itemize}
+            \item The heat rate into the fin is influenced by both $\alpha$ and $k_{cond}$.
+            \item Decreasing $\alpha$ reduces the efficiency of heat transfer into the fin by slowing down heat propagation.
+            \item However, increasing $k_{cond}$ enhanced heat conduction and overall heat transfer efficiency, mitigating the impact of lower $\alpha$ on the heat rate. This is seen with the significantly higher heat rate value, compared to those in scenario 4.
+        \end{itemize}
+\end{enumerate}
 
 \end{document}
