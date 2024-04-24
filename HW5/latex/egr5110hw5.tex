@@ -1,0 +1,223 @@
+\documentclass{article}
+
+\usepackage{fancyhdr, lastpage}
+\usepackage[inline]{enumitem}
+\usepackage{listings}
+\usepackage[scaled=0.95]{inconsolata}  % Use a monospaced font, like Inconsolata
+\usepackage{wasysym}
+\usepackage{booktabs}
+\usepackage{booktabs, multicol, multirow, array, threeparttable}
+\usepackage{siunitx}
+\usepackage{xfrac}
+\usepackage{extramarks}
+\usepackage{amsmath, amsthm, amsfonts, mathtools, empheq}
+\usepackage{caption}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{pagecolor} %% for dark background
+\usepackage{hyperref}
+\usepackage{refcount}
+\usepackage{subfigure}
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+% Define a command to print last page number without hyperlink
+\newcommand*{\lastpagewithoutlink}{%
+    \getpagerefnumber{LastPage}%
+}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkTitle}
+\rhead{\hmwkClass}
+\lfoot{\lastxmark}
+\cfoot{Page \thepage \ of \lastpagewithoutlink}
+
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Homework\ \#5}
+\newcommand{\hmwkDueDate}{May 5th, 2024}
+\newcommand{\hmwkClass}{EGR 5110}
+\newcommand{\hmwkClassTime}{}
+\newcommand{\hmwkClassInstructor}{Professor Nissenson}
+\newcommand{\hmwkAuthorName}{\textbf{Francisco Sanudo}}
+
+%
+% Title Page
+%
+
+\title{
+    \vspace{2in}
+    \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+    \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate\ at 11:59pm}\\
+    \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+    \vspace{3in}
+}
+
+\author{\hmwkAuthorName}
+\date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% More settings
+%
+
+% Table Settings
+% \setlength{\tabcolsep}{5pt} % Gap before text starts
+\renewcommand{\arraystretch}{2.5} % Cell Height Scaling
+\setlength{\arrayrulewidth}{0.5mm} % Table Border Thickness
+\arrayrulecolor{blue} % Table Border Color
+\newcolumntype{s}{>{\columncolor{black!10}} c}
+
+% Link Settings
+\hypersetup{
+    colorlinks=false,       % false: boxed links; true: colored links
+    linkcolor=red,          % color of internal links (change box color with linkbordercolor)
+    citecolor=green,        % color of links to bibliography
+    urlcolor=cyan,           % color of external links
+    pdftitle={EGR 5110 HW3}
+}
+
+% Color defintions
+\definecolor{magenta}{RGB}{255,0,255}
+\definecolor{cyan}{RGB}{0,255,255}
+\definecolor{white}{RGB}{255,255,255}
+\definecolor{red}{RGB}{255,0,0}
+\definecolor{green}{RGB}{0,255,0}
+\definecolor{orange}{RGB}{255,165,0}
+\definecolor{yellow}{RGB}{255,255,0}
+\definecolor{blue}{RGB}{10,10,255}
+
+% Text color shortcuts
+\newcommand{\cw}{\color{white}}
+\newcommand{\cm}{\color{magenta}}
+\newcommand{\cc}{\color{cyan}}
+\newcommand{\cred}{\color{red}}
+\newcommand{\cb}{\color{blue}}
+\newcommand{\cg}{\color{green}}
+\newcommand{\cy}{\color{yellow}}
+\newcommand{\co}{\color{orange}}
+
+%
+% Various Helper Commands
+%
+
+
+% For derivatives
+\newcommand{\deriv}[2]{\frac{d#1}{d#2}}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\displaystyle \frac{\partial #1}{\partial #2}}
+
+% Redefine \dfrac if you want all fractions to be in display style automatically
+\newcommand{\ddfrac}[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+%% Box settings
+% \setlength{\fboxsep}{9pt} % Adjust the padding thickness here
+\setlength{\fboxrule}{1pt} % Adjust the border thickness here
+
+% The \dimexpr\linewidth-2\fboxsep-2\fboxrule\relax calculation ensures that the width of the minipage is reduced by twice the padding and twice the border width, as there is padding and border on both the left and right sides.
+\newcommand{\boxsettings}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+
+% Paragraph box shortcut for tables
+\newcommand{\PB}[2]{\parbox{#1}{\centering #2}}
+
+%% make subscripts smaller
+% \begingroup\lccode`~=`_
+% \lowercase{\endgroup\def~}#1{_{\scriptscriptstyle#1}}
+% \AtBeginDocument{\mathcode`_="8000 \catcode`_=12 }
+
+%% small negative sign
+\newcommand{\dashexp}{\scalebox{0.35}[0.5]{$-$}}
+\newcommand{\dash}{\scalebox{0.5}[1.0]{$-$}}
+
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+% % Make table of contents
+% \tableofcontents
+
+% % Make list of figures and tables
+% \listoffigures
+% \listoftables
+
+\pagebreak
+
+\section{Integrating Quadratic Function}
+
+\pagebreak
+
+\section{Results}
+
+
+\end{document}
