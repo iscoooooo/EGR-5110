@@ -23,7 +23,7 @@
 % OTHER
 % .m files required              : MAIN.m (calling script)
 % Files required (not .m)        : none
-% Built-in MATLAB functions used : numel, zeros
+% Built-in MATLAB functions used : numel, zeros, fplot
 % User-defined functions         : applyFigureProperties
 
 function [totaldist,vinstant,subdist] = quadspline(x,fx,tinstant,t1,t2)
@@ -101,6 +101,8 @@ ylabel('Distance ($m$)')
 totaldist = 0;
 k = 1;
 
+% Integration of the velocity function over the current segment
+
 for j = 2:N+1 % N+1 data points where N is the number of splines
     I = (c(k)*x(j)^3/3 + c(k+1)*x(j)^2/2 + c(k+2)*x(j)) ...
         - (c(k)*x(j-1)^3/3 + c(k+1)*x(j-1)^2/2 + c(k+2)*x(j-1));
@@ -114,15 +116,11 @@ end
 % Find the relevant spline that contains tinstant
 spline_idx = findSpline(x,tinstant);
 
-% Get the coefficients of the spline segment containing tinstant
-coeff_idx = 3*spline_idx - 2;
-
-c1 = c(coeff_idx);
-c2 = c(coeff_idx + 1);
-c3 = c(coeff_idx + 2);
+% Starting coefficient index
+k = 3*spline_idx - 2;
 
 % Calculate the velocity at tinstant using the derivative of the spline
-vinstant = c1*tinstant^2 + c2*tinstant + c3;
+vinstant = c(k)*tinstant^2 + c(k+1)*tinstant + c(k+2);
 
 %% <Insert code that calculates the distance traveled from t1 to t2.>
 
@@ -131,12 +129,34 @@ spline_idx_t1 = findSpline(x,t1);
 spline_idx_t2 = findSpline(x,t2);
 
 % Initialize variables for distance calculation
+subdist = 0;
 k = 3*spline_idx_t1 - 2;  % Starting coefficient index for t1 segment
-l = 3*spline_idx_t2 - 2;  % Starting coefficient index for t2 segment 
 
-% Integration of the velocity function over [t1, t2]
-subdist = (c(l)*t2^3/3 + c(l+1)*t2^2/2 + c(l+2)*t2) ...
-    - (c(k)*t1^3/3 + c(k+1)*t1^2/2 + c(k+2)*t1);  % Integral of velocity function
+% Loop through spline segments from t1 to t2
+for j = (spline_idx_t1):(spline_idx_t2 + 1)
+
+    % Integration of the velocity function over the current segment
+
+    % [t1, x(j+1)]
+    if j == spline_idx_t1
+        I = (c(k)*x(j+1)^3/3 + c(k+1)*x(j+1)^2/2 + c(k+2)*x(j+1)) ...
+            - (c(k)*t1^3/3 + c(k+1)*t1^2/2 + c(k+2)*t1);
+        subdist = subdist + I;
+    % [x(j), t2]
+    elseif j == spline_idx_t2
+        I = (c(k)*t2^3/3 + c(k+1)*t2^2/2 + c(k+2)*t2) ...
+            - (c(k)*x(j)^3/3 + c(k+1)*x(j)^2/2 + c(k+2)*x(j));
+        subdist = subdist + I;
+    % [x(j), x(j+1)]    
+    else 
+        I = (c(k)*x(j+1)^3/3 + c(k+1)*x(j+1)^2/2 + c(k+2)*x(j+1)) ...
+            - (c(k)*x(j)^3/3 + c(k+1)*x(j)^2/2 + c(k+2)*x(j));
+        subdist = subdist + I;
+    end
+
+    % Update coefficient index for the next segment
+    k = k + 3;
+end
 
 end
 
