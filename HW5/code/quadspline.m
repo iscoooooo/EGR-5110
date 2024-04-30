@@ -105,9 +105,9 @@ for j = 2:N+1 % N+1 data points where N is the number of splines
     I = (c(k)*x(j)^3/3 + c(k+1)*x(j)^2/2 + c(k+2)*x(j)) ...
         - (c(k)*x(j-1)^3/3 + c(k+1)*x(j-1)^2/2 + c(k+2)*x(j-1));
     totaldist = totaldist + I;
-    
+
     k = k + 3; % increment to next set of coefficients
-end 
+end
 
 %% <Insert code that calculates the velocity at tinstant.>
 
@@ -115,7 +115,8 @@ end
 spline_idx = findSpline(x,tinstant);
 
 % Get the coefficients of the spline segment containing tinstant
-coeff_idx = 3 * (spline_idx - 1) + 1;
+coeff_idx = 3*spline_idx - 2;
+
 c1 = c(coeff_idx);
 c2 = c(coeff_idx + 1);
 c3 = c(coeff_idx + 2);
@@ -130,24 +131,12 @@ spline_idx_t1 = findSpline(x,t1);
 spline_idx_t2 = findSpline(x,t2);
 
 % Initialize variables for distance calculation
-subdist = 0;
-k = 3 * (spline_idx_t1 - 1) + 1;  % Starting coefficient index for t1 segment
+k = 3*spline_idx_t1 - 2;  % Starting coefficient index for t1 segment
+l = 3*spline_idx_t2 - 2;  % Starting coefficient index for t2 segment 
 
-% Loop through spline segments from t1 to t2
-for j = spline_idx_t1:spline_idx_t2-1
-    % Coefficients for current spline segment
-    c1 = c(k);
-    c2 = c(k + 1);
-    c3 = c(k + 2);
-    
-    % Integration of the velocity function over the current segment [x(j), x(j+1)]
-    I = (c1*x(j+1)^3/3 + c2*x(j+1)^2/2 + c3*x(j+1)) ...
-        - (c1*x(j)^3/3 + c2*x(j)^2/2 + c3*x(j));  % Integral of velocity function
-    subdist = subdist + I;
-    
-    % Update coefficient index for the next segment
-    k = k + 3;
-end
+% Integration of the velocity function over [t1, t2]
+subdist = (c(l)*t2^3/3 + c(l+1)*t2^2/2 + c(l+2)*t2) ...
+    - (c(k)*t1^3/3 + c(k+1)*t1^2/2 + c(k+2)*t1);  % Integral of velocity function
 
 end
 
