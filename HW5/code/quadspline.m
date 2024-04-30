@@ -133,7 +133,7 @@ subdist = 0;
 k = 3*spline_idx_t1 - 2;  % Starting coefficient index for t1 segment
 
 % Loop through spline segments from t1 to t2
-for j = (spline_idx_t1):(spline_idx_t2 + 1)
+for j = (spline_idx_t1):(spline_idx_t2)
 
     % Integration of the velocity function over the current segment
 
