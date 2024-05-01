@@ -1,11 +1,11 @@
 clear; clc; close all
 
-t = [1 2 6 7 10 13 20 25]; % times (s)
-v = t.^2; % corresponding velocities (ft/s)
+t = [0.0 1.2 2.0 3.5 4.2 5.8 7.0 8.1 9.3]; % times (s)
+v = [0.0 5.3 12.8 30.4 38.9 52.0 57.1 65.8 70.8]; % corresponding velocities (ft/s)
 
 tinstant = 6.0; % time for calculating instantaneous velocity
 t1 = 3.0; t2 = 6.8; % subset of time
-% I will alter the above lines of code
+% alter the above lines of code
 
 % Code to ensure tinstant, t1, and t2 are allowed
 if( tinstant < t(1) | tinstant > t(end) )
