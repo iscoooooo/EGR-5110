@@ -2,38 +2,59 @@
 % Date: 4/26/24
 %
 % PURPOSE
-% quadspline generates a set of quadratic splines connecting the data
-% points and calculates the integral under the splines.
+% quadspline interpolates velocity data using quadratic splines and provide
+% computations related to these splines, including:
 %
-% REFERENCES
-% Numerical Integration (notes), P. Nissenson
+%   1. Interpolation: Fit quadratic splines to given time and velocity data
+%   points
+%
+%   2. Integration: Compute the integral of velocity over specified time
+%   intervals to determine distances traveled
+%
+%   3. Velocity Query: Determine the instantaneous velocity at a queried
+%   time
+%  
+%   4. Distance Calculation: Compute the distance traveled between two
+%   specified times
 %
 % INPUTS
-% - x        : time vector
-% - fx       : velocity vector
-% - tinstant : time queried to determine the instantaneous velocity
-% - t1       : initial time
-% - t2       : final time
+% - x        : Time vector corresponding to velocity data
+% - fx       : Velocity vector
+% - tinstant : Time at which to determine the instantaneous velocity
+% - t1 & t2  : Initial and final times for distance calculations
 %
 % OUTPUTS
-% - totaldist : total distance traveled from initial time to final time
-% - vinstant  : velocity at tinstant
-% - subdist   : distance traveled from t1 to t2
+% - totaldist : Total distance traveled from the beginning to the end of the time vector
+% - vinstant  : Instantaneous velocity at the specified time 'tinstant'
+% - subdist   : Distance traveled between the specified times 't1' and 't2'
+%
+% EXAMPLE
+% x = [0, 1, 2, 3];               % Time vector
+% fx = [0, 2, 1, 3];              % Velocity vector
+% tinstant = 1.5;                 % Instantaneous velocity query time
+% t1 = 0.5;                       % Start time for distance calculation
+% t2 = 2.5;                       % End time for distance calculation
+%
+% [totaldist, vinstant, subdist] = quadspline(x, fx, tinstant, t1, t2);
 %
 % OTHER
 % .m files required              : MAIN.m (calling script)
 % Files required (not .m)        : none
 % Built-in MATLAB functions used : numel, zeros, fplot
 % User-defined functions         : applyFigureProperties
+%
+% REFERENCES
+% Numerical Integration (notes), P. Nissenson
+%
 
 function [totaldist,vinstant,subdist] = quadspline(x,fx,tinstant,t1,t2)
 
 % Initialize variables
-N = numel(x) - 1;
+N = numel(x) - 1;   % total number of splines
 b = zeros(3*N,1);   % column matrix of knowns
 A = zeros(3*N,3*N); % coefficient matrix
 
-%% Generate Coefficients of Splines
+%% Generate coefficients of splines
 
 j = 1; % spline index
 k = 1; % starting column index
@@ -67,7 +88,7 @@ A(1,1) = 1;
 % Solve for unknown coefficients
 c = A\b;
 
-%% Plot
+%% Plot splines
 
 j = 1;  % spline index [reset]
 
@@ -87,19 +108,21 @@ for i = 1:N
 end
 
 % Plot data points
-plot(x,fx,'ro')
+h = plot(x,fx,'ro');
 
 % Axis properties
 set(gca,'TickLabelInterpreter','latex')
 title('Quadratic Spline Fit')
 xlabel('Time ($s$)');
 ylabel('Distance ($m$)')
+legend(h, 'Data Points')
+grid on
 
-%% Total Distance Traveled
+%% Calculate total distance traveled
 
 % Initialize variables
 totaldist = 0;
-k = 1;
+k = 1;          % coefficient index
 
 % Integration of the velocity function over the current segment
 
@@ -111,7 +134,7 @@ for j = 2:N+1 % N+1 data points where N is the number of splines
     k = k + 3; % increment to next set of coefficients
 end
 
-%% <Insert code that calculates the velocity at tinstant.>
+%% Calculate velocity at tinstant
 
 % Find the relevant spline that contains tinstant
 spline_idx = findSpline(x,tinstant);
@@ -119,10 +142,10 @@ spline_idx = findSpline(x,tinstant);
 % Starting coefficient index
 k = 3*spline_idx - 2;
 
-% Calculate the velocity at tinstant using the derivative of the spline
+% Calculate the velocity at tinstant
 vinstant = c(k)*tinstant^2 + c(k+1)*tinstant + c(k+2);
 
-%% <Insert code that calculates the distance traveled from t1 to t2.>
+%% Calculate the distance traveled from t1 to t2
 
 % Find the relevant spline that contains t1 and t2
 spline_idx_t1 = findSpline(x,t1);
@@ -165,7 +188,7 @@ end
 function idx = findSpline(x, tinstant)
 % Finds the spline segment index that contains tinstant
 
-% Initialize segment_index to default value
+% Initialize segment index
 idx = 0;
 
 % Check each interval [x(i), x(i+1)] to find the relevant segment
