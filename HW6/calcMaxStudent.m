@@ -82,7 +82,7 @@ while ~converged && numsteps < maxiter
 
             % Increment function evaluation counter
             numfneval = numfneval + 1;
-            
+
             % Update temporary variables
             xtemp = X(1) + g(1)*h;
             ytemp = X(2) + g(2)*h;
@@ -133,24 +133,24 @@ ax = gca; % get current axes
 % Plot contours
 contour(x,y,z,'ShowText','on');
 
-% Plot starting point
-plot(xi,yi,'bo','Markersize',12,'MarkerFaceColor','b')
-
 % Plot the path to the optimal solution
 plot(xypos(:,1),xypos(:,2),'k')
-plot(xypos(:,1),xypos(:,2),'ks','MarkerSize',3,'MarkerFaceColor','k')
+plot(xypos(:,1),xypos(:,2),'ko','MarkerSize',3,'MarkerFaceColor','k')
+
+% Plot starting point
+plot(xi,yi,'bo','Markersize',6,'MarkerFaceColor','b')
 
 % Plot the optimal solution
-plot(xypos(end,1),xypos(end,2),'m^','Markersize',12,'MarkerFaceColor','m')
+plot(xypos(end,1),xypos(end,2),'mo','Markersize',6,'MarkerFaceColor','m')
 
 % Axis properties
 set(ax,'TickLabelInterpreter','latex')
 title('Gradient Ascent w/ Armijo Condition')
 xlabel('$x$')
 ylabel('$y$')
-legend('','$x_i$, $y_i$','Path','','$x^*$, $y^*$')
+legend('','Path','','$x_i$, $y_i$','$x^*$, $y^*$')
 grid on
-axis equal
+axis equal 
 
 % Colormap & colorbar properties
 colormap(ax,'turbo');
