@@ -22,3 +22,9 @@ $\hookrightarrow$ 4th stage Runge-Kutta Method
 
 ### Solving Partial Differential Equations
 $\hookrightarrow$ Finite-difference Method
+
+### Numerical Integration
+$\hookrightarrow$ Quadratic Splines
+
+### Optimization
+$\hookrightarrow$ Gradient Ascent with Inexact (Backtracking) Line Search (2D)
