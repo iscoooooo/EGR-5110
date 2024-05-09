@@ -1,5 +1,6 @@
 % Written by: Francisco Sanudo
 % Date: 5/1/24
+% Updated: 5/8/24
 %
 % PURPOSE
 % calcMaxStudent solves a 2D unconstrained optimization problem by finding
@@ -11,7 +12,7 @@
 % - f       : Objective function (anonymous func of x and y)
 % - xi & yi : Initial guesses for x and y
 % - tol     : Error tolerance for convergence
-% - sigma   : Armmijo condition constant
+% - sigma   : Armijo condition constant
 % - beta    : Backtracking constant
 %
 % OUTPUTS
@@ -26,14 +27,14 @@
 % tol = 1e-2;                                 % tolerance
 % sigma = 0.0001;                             % armijo condition consant
 % beta = 0.5;                                 % backtracking constant
-% 
+%
 % [xypos,numsteps,numfneval] = calcMaxStudent(f,xi,yi,tol,sigma,beta);
 %
 % OTHER
 % .m files required              : MAIN.m (calling script)
 % Files required (not .m)        : none
 % Built-in MATLAB functions used : numel, zeros
-% Utility functions              : grad, eucildeanNorm, applyFigureProperties
+% Utility functions              : grad, eucildeanNorm, applyFigureProperties, myMax
 %
 % REFERENCES
 % Optimization (notes), P. Nissenson
@@ -105,19 +106,35 @@ numfneval = numfneval + 1;
 
 %% Contour plot that shows the path taken to the maximum
 
-% Define grid
-x = -10:.1:10;
-y = x;
+% Extract x and y coordinates from xypos
+x_coords = xypos(:, 1);
+y_coords = xypos(:, 2);
 
-% Initialize variable
-z  = zeros(length(x));
+% Calculate maximum magnitudes of x and y coordinates
+max_x_magnitude = myMax(abs(x_coords));
+max_y_magnitude = myMax(abs(y_coords));
+
+% Calculate x and y ranges (20% larger than max magnitude)
+x_range = [-1, 1] * (1.2 * max_x_magnitude);
+y_range = [-1, 1] * (1.2 * max_y_magnitude);
+
+% Calculate grid spacing based on the modified ranges
+dx = abs((x_range(end) - x_range(1))) / 100;
+dy = abs((y_range(end) - y_range(1))) / 100;  
+
+% Define grid for contour plot
+x = x_range(1):dx:x_range(2);
+y = y_range(1):dy:y_range(2);
 
 % Evaluate the function at each point on grid
 %   Each row corresponds to a constant y value and each column corresponds
 %   to a constant x value. This means that z(i, j) represents the function
 %   value at x(j) and y(i)
+
+z  = zeros(numel(y),numel(x));
+
 for i = 1:numel(x)
-    for j = 1:numel(x)
+    for j = 1:numel(y)
         z(i,j) = f(x(j), y(i));
     end
 end
@@ -134,14 +151,14 @@ ax = gca; % get current axes
 contour(x,y,z,'ShowText','on');
 
 % Plot the path to the optimal solution
-plot(xypos(:,1),xypos(:,2),'k')
-plot(xypos(:,1),xypos(:,2),'ko','MarkerSize',3,'MarkerFaceColor','k')
+plot(x_coords,y_coords,'k')
+plot(x_coords,y_coords,'ko','MarkerSize',3,'MarkerFaceColor','k')
 
 % Plot starting point
 plot(xi,yi,'bo','Markersize',6,'MarkerFaceColor','b')
 
 % Plot the optimal solution
-plot(xypos(end,1),xypos(end,2),'mo','Markersize',6,'MarkerFaceColor','m')
+plot(x_coords(end),y_coords(end),'mo','Markersize',6,'MarkerFaceColor','m')
 
 % Axis properties
 set(ax,'TickLabelInterpreter','latex')
@@ -150,7 +167,7 @@ xlabel('$x$')
 ylabel('$y$')
 legend('','Path','','$x_i$, $y_i$','$x^*$, $y^*$')
 grid on
-axis equal 
+% axis equal
 
 % Colormap & colorbar properties
 colormap(ax,'turbo');
@@ -163,31 +180,38 @@ end
 %-------------------------------------------------------------------------
 
 function g = grad(f,X)
-% Estimates the gradient of the function f using a centered finite-
+% grad estimates the gradient of the function f using a centered finite-
 % difference approximation.
+%
+% Input:
+%   f: Anonymous function representing the objective function f(x, y)
+%   X: Input vector containing the current point (x, y)
+%
+% Output:
+%   g: Estimated gradient vector of f at the point X
 
 n = numel(X);          % Dimension of input vector X
 g = zeros(n, 1);       % Initialize gradient vector
-delta = 0.0001;        % Perturbation parameter
+delta = 0.00001;        % Perturbation parameter
 
 % Estimate gradient
 for i = 1:n
     % Create a copy of X to perturb
-    X_perturbed = X; 
+    X_perturbed = X;
 
     % Perturb the i-th element
-    X_perturbed(i) = X_perturbed(i) + delta; 
+    X_perturbed(i) = X_perturbed(i) + delta;
 
     % Calculate the forward difference
     f_forward = f(X_perturbed(1),X_perturbed(2));
 
     % Perturb in the negative direction
-    X_perturbed(i) = X_perturbed(i) - 2 * delta; 
+    X_perturbed(i) = X_perturbed(i) - 2 * delta;
 
     % Calculate the backward difference
     f_backward = f(X_perturbed(1),X_perturbed(2));
 
-    % Estimate partial derivative w.r.t. i-th element using central 
+    % Estimate partial derivative w.r.t. i-th element using central
     % difference formula
     g(i) = (f_forward - f_backward) / (2 * delta);
 end
@@ -197,7 +221,13 @@ end
 %-------------------------------------------------------------------------
 
 function euclidean_norm_value = euclideanNorm(vec)
-% Computes the Euclidean norm of an n-dimensonal vector
+% euclideanNorm computes the Euclidean norm (magnitude) of an n-dimensional vector.
+%
+% Input:
+%   vec: An n-dimensional vector (column vector)
+%
+% Output:
+%   euclidean_norm_value: The Euclidean norm of the input vector `vec`
 
 % Square each element of vector
 squared_elements = vec.^2;
@@ -221,11 +251,52 @@ end
 
 %-------------------------------------------------------------------------
 
+function [maximum, idx] = myMax(A)
+% myMax calculates the largest element of an array A and returns its value
+% along with the index of that element in the array.
+%
+% Input:
+%   A: Array of numeric values
+%
+% Output:
+%   maximum: Largest element in the array A
+%   idx: Index of the largest element in the array A
+
+% Initialize variables to track the maximum value and its index
+maximum = A(1);  % Assume the first element is the maximum initially
+idx = 1;         % Index of the assumed maximum
+
+% Iterate through the array to find the actual maximum value and its index
+for j = 2:numel(A)
+    if A(j) > maximum
+        % Update the maximum value and its index if a larger value is found
+        maximum = A(j);
+        idx = j;
+    end
+end
+
+end
+
+%-------------------------------------------------------------------------
+
 function applyFigureProperties(figHandle, position)
+% applyFigureProperties sets specific properties for a given figure handle.
+%
+% Inputs:
+%   - 'figHandle': Handle to the figure (obtained using 'figure' or 'gcf')
+%   - 'position': Position vector [left, bottom, width, height] in normalized units
+%                 specifying the figure's position and size
+% Output:
+%   None (modifies the specified figure properties directly)
+%
+% Example Usage:
+%   applyFigureProperties(fig, [0.2, 0.2, 0.5, 0.6]);
+
 set(figHandle, ...
     'Units', 'normalized', ...
     'Position', position, ...
     'DefaultTextInterpreter', 'latex', ...
     'DefaultLegendInterpreter', 'latex', ...
     'DefaultAxesFontSize', 14);
+
 end
