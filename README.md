@@ -27,4 +27,4 @@ $\hookrightarrow$ Finite-difference Method
 $\hookrightarrow$ Quadratic Splines
 
 ### Optimization
-$\hookrightarrow$ Gradient Ascent with Inexact (Backtracking) Line Search (2D)
+$\hookrightarrow$ 2D Gradient Ascent with Inexact (Backtracking) Line Search
